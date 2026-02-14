@@ -21,7 +21,11 @@ public class Tabuleiro implements Cloneable {
                         matriz[i][j] = 2; // Pretas
                     } else if (i > 3) {
                         matriz[i][j] = 1; // Brancas
+                    } else {
+                        matriz[i][j] = 0; // Vazio
                     }
+                } else {
+                    matriz[i][j] = -1; // Casa Inválida
                 }
             }
         }
@@ -44,8 +48,91 @@ public class Tabuleiro implements Cloneable {
     /*
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
-    public boolean verificaMovimento () {
+
+    public boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
         
+        if (matriz[r1][c1] == -1 || matriz[r1][c1] == 0) { // Impede que o jogador seja capaz de selecionar casas claras ou vazias
+            return false; 
+        }
+
+        switch (this.matriz[r1][c1]){
+            case 1: // Peça Branca
+                if (c1 == c2){
+                    return false; // Impede movimentos verticais
+                }
+                if (r2 < r1){ // Brancas só podem mover para cima
+                    if (this.matriz[r2][c2] == 0) { // A casa de destino deve estar vazia
+                        // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
+                        if(r2 == r1 - 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
+                            this.matriz[r2][c2] = this.matriz[r1][c1];
+                            this.matriz[r1][c1] = 0;
+                            return true;
+                        } else if (r2 == r1 - 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
+                            int tempR = r1 - 1;
+                            int tempC = (c2 == c1 - 2) ? c1 - 1 : c1 + 1;
+                            if (this.matriz[tempR][tempC] == 2 || this.matriz[tempR][tempC] == 4) { // Verifica se a peça adversária está na casa intermediária
+                                this.matriz[r2][c2] = this.matriz[r1][c1];
+                                this.matriz[r1][c1] = 0;
+                                this.matriz[tempR][tempC] = 0;
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false; 
+                        }
+                    }
+                    return false; 
+                } 
+                break;
+            case 2: // Peça Preta
+                if (c1 == c2){
+                    return false; // Impede movimentos verticais
+                }
+                if (r2 > r1){ // Pretas só podem mover para baixo
+                    if (this.matriz[r2][c2] == 0) { // A casa de destino deve estar vazia
+                        // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
+                        if(r2 == r1 + 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
+                            this.matriz[r2][c2] = this.matriz[r1][c1];
+                            this.matriz[r1][c1] = 0;
+                            return true;
+                        } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
+                            int tempR = r1 + 1;
+                            int tempC = (c2 == c1 - 2) ? c1 - 1 : c1 + 1;
+                            if (this.matriz[tempR][tempC] == 1 || this.matriz[tempR][tempC] == 3) { // Verifica se a peça adversária está na casa intermediária
+                                this.matriz[r2][c2] = this.matriz[r1][c1];
+                                this.matriz[r1][c1] = 0;
+                                this.matriz[tempR][tempC] = 0;
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false; 
+                        }
+                    }
+                    return false; 
+                }
+                break;
+            case 3: // Dama Branca
+            case 4: // Dama Preta
+                // Damas podem mover em qualquer direção, então não há restrição aqui
+                break;
+        }
+        
+
+        // Promoção simples para Dama (opcional)
+        if (this.matriz[r2][c2] == 2 && r2 == 5) {
+            this.matriz[r2][c2] = 4;
+        }
+        if (this.matriz[r2][c2] == 1 && r2 == 0) {
+            this.matriz[r2][c2] = 3;
+        }
+
+        return false;
+    }
+
+    public boolean verificaMovimento () {
         return true;
     }
     

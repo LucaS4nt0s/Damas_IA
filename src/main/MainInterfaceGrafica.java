@@ -1,7 +1,7 @@
 package main;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 /**
  * @author Douglas
@@ -12,6 +12,7 @@ public final class MainInterfaceGrafica extends JFrame {
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
     
     /*
+        Casa Inválida: -1
         Vazio: 0
         Brancas: 1
         Pretas: 2
@@ -80,7 +81,7 @@ public final class MainInterfaceGrafica extends JFrame {
         if (linhaOrigem == -1) {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
-            if (tabuleiroLogico.getMatriz()[linha][col] != 0) {
+            if (tabuleiroLogico.getMatriz()[linha][col] != 0 && tabuleiroLogico.getMatriz()[linha][col] != -1) {
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -95,7 +96,7 @@ public final class MainInterfaceGrafica extends JFrame {
                 return;
             }
 
-            boolean sucesso = moverPecaLogica(linhaOrigem, colOrigem, linha, col);
+            boolean sucesso = tabuleiroLogico.moverPecaLogica(linhaOrigem, colOrigem, linha, col);
 
             if (sucesso) {
                 cancelarSelecao();
@@ -122,43 +123,50 @@ public final class MainInterfaceGrafica extends JFrame {
         colOrigem = -1;
     }
 
-    private boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
+    // private boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
         
-        // A casa de destino deve estar vazia
-        if (tabuleiroLogico.getMatriz()[r2][c2] == 0) {
+    //     // A casa de destino deve estar vazia
+    //     if (tabuleiroLogico.getMatriz()[r2][c2] == 0) {
             
-            // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
-            tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
-            tabuleiroLogico.getMatriz()[r1][c1] = 0;
+    //         // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
+    //         tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
+    //         tabuleiroLogico.getMatriz()[r1][c1] = 0;
 
-            // Promoção simples para Dama (opcional)
-            if (tabuleiroLogico.getMatriz()[r2][c2] == 2 && r2 == 5) {
-                tabuleiroLogico.getMatriz()[r2][c2] = 4;
-            }
-            if (tabuleiroLogico.getMatriz()[r2][c2] == 1 && r2 == 0) {
-                tabuleiroLogico.getMatriz()[r2][c2] = 3;
-            }
+    //         // Promoção simples para Dama (opcional)
+    //         if (tabuleiroLogico.getMatriz()[r2][c2] == 2 && r2 == 5) {
+    //             tabuleiroLogico.getMatriz()[r2][c2] = 4;
+    //         }
+    //         if (tabuleiroLogico.getMatriz()[r2][c2] == 1 && r2 == 0) {
+    //             tabuleiroLogico.getMatriz()[r2][c2] = 3;
+    //         }
 
-            return true;
-        }
-        return false;
-    }
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainInterfaceGrafica::new);
     }
     
     /*
-     * Atualiza a interface gráfica com base na matriz lógica do Tabuleiro. Este
-     * método será chamado após cada jogada da IA.
-     */
-    public void sincronizarInterface() {
-        for (int i = 0; i < TAMANHO; i++) {
-            for (int j = 0; j < TAMANHO; j++) {
-                int peca = tabuleiroLogico.getMatriz()[i][j];
-                tabuleiroInterface[i][j].setTipoPeca(peca);
+    * Atualiza a interface gráfica com base na matriz lógica do Tabuleiro. Este
+    * método será chamado após cada jogada da IA.
+    */
+   public void sincronizarInterface() {
+       for (int i = 0; i < TAMANHO; i++) {
+           for (int j = 0; j < TAMANHO; j++) {
+               int peca = tabuleiroLogico.getMatriz()[i][j];
+               tabuleiroInterface[i][j].setTipoPeca(peca);
             }
         }
+        // for(int i = 0; i < TAMANHO; i++) {
+        //     for(int j = 0; j < TAMANHO; j++) {
+        //         System.out.print(tabuleiroLogico.getMatriz()[i][j] + " |");
+        //     }
+        //     System.out.println(); // Nova linha após imprimir toda a matriz
+        // }
+        // System.out.println("--------------------------------------------------");
     }
 
     private class CasaBotao extends JButton {
