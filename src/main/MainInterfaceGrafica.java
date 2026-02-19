@@ -96,12 +96,12 @@ public final class MainInterfaceGrafica extends JFrame {
                 return;
             }
 
-            boolean sucesso = tabuleiroLogico.moverPecaLogica(linhaOrigem, colOrigem, linha, col);
+            boolean sucesso = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col);
 
             if (sucesso) {
                 cancelarSelecao();
                 sincronizarInterface();
-
+                
                 /*
                     VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA
                 */

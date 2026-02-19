@@ -7,6 +7,9 @@ public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
     private final int TAMANHO = 6;
+    private int turno = 0; // 1 para brancas, 2 para pretas
+    private boolean casaDeOrigemValida = false;
+    private boolean casaDeDestinoValida = false;
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -29,6 +32,7 @@ public class Tabuleiro implements Cloneable {
                 }
             }
         }
+        setTurno(1); // Começa com as brancas
     }
 
     @Override
@@ -49,10 +53,56 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
-    public boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
+    private boolean verificarCasaOrigemVálida(int r, int c){
+        if (matriz[r][c] == 'X' || matriz[r][c] == '0') {
+            return false; // Casa inválida ou vazia
+        }
+
+        if (turno == 2 && (matriz[r][c] == '1' || matriz[r][c] == '3')) {
+            return false; // Casa de origem inválida para as pretas
+        } else if (turno == 1 && (matriz[r][c] == '2' || matriz[r][c] == '4')) {
+            return false; // Casa de origem inválida para as brancas
+        }
+        return true;
+    }
+
+    private boolean verificarCasaDestinoVálida(int r, int c){
+        if (matriz[r][c] == 'X') {
+            return false; // Casa inválida
+        }
+
+        switch (matriz[r][c]) {
+            case '1': // Peça Branca
+                if (turno != 1) {
+                    return false; // Não é a vez das brancas
+                }
+                break;
+            case '2': // Peça Preta
+                if (turno != 2) {
+                    return false; // Não é a vez das pretas
+                }
+                break;
+            case '3': // Dama Branca
+                if (turno != 1) {
+                    return false; // Não é a vez das brancas
+                }
+                break;
+            case '4': // Dama Preta
+                if (turno != 2) {
+                    return false; // Não é a vez das pretas
+                }
+                break;
+            case '0': // Casa vazia
+                return true; // Casa de destino válida
+        }
+        return false;
+    }
+
+    public boolean fazerMovimento(int r1, int c1, int r2, int c2) {
         
-        if (matriz[r1][c1] == 'X' || matriz[r1][c1] == '0') { // Impede que o jogador seja capaz de selecionar casas claras ou vazias
-            return false; 
+        casaDeOrigemValida = verificarCasaOrigemVálida(r1, c1); // verificar se a casa de origem é válida
+        if (!casaDeOrigemValida) {
+            return false; // A casa de origem é inválida ou vazia
         }
 
         switch (this.matriz[r1][c1]){
@@ -146,5 +196,13 @@ public class Tabuleiro implements Cloneable {
 
     public void setMatriz(char[][] matriz) {
         this.matriz = matriz;
+    }
+
+    public int getTurno() {
+        return turno;
+    }
+
+    public void setTurno(int turno) {
+        this.turno = turno;
     }
 }
