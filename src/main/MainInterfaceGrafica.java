@@ -81,7 +81,7 @@ public final class MainInterfaceGrafica extends JFrame {
         if (linhaOrigem == -1) {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
-            if (tabuleiroLogico.getMatriz()[linha][col] != 0 && tabuleiroLogico.getMatriz()[linha][col] != -1) {
+            if (tabuleiroLogico.getMatriz()[linha][col] != '0' && tabuleiroLogico.getMatriz()[linha][col] != 'X') {
                 linhaOrigem = linha;
                 colOrigem = col;
                 tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -156,24 +156,24 @@ public final class MainInterfaceGrafica extends JFrame {
    public void sincronizarInterface() {
        for (int i = 0; i < TAMANHO; i++) {
            for (int j = 0; j < TAMANHO; j++) {
-               int peca = tabuleiroLogico.getMatriz()[i][j];
+               char peca = tabuleiroLogico.getMatriz()[i][j];
                tabuleiroInterface[i][j].setTipoPeca(peca);
             }
         }
-        // for(int i = 0; i < TAMANHO; i++) {
-        //     for(int j = 0; j < TAMANHO; j++) {
-        //         System.out.print(tabuleiroLogico.getMatriz()[i][j] + " |");
-        //     }
-        //     System.out.println(); // Nova linha após imprimir toda a matriz
-        // }
-        // System.out.println("--------------------------------------------------");
+        for(int i = 0; i < TAMANHO; i++) {
+            for(int j = 0; j < TAMANHO; j++) {
+                System.out.print(tabuleiroLogico.getMatriz()[i][j] + " |");
+            }
+            System.out.println(); // Nova linha após imprimir toda a matriz
+        }
+        System.out.println("--------------------------------------------------");
     }
 
     private class CasaBotao extends JButton {
 
-        private int tipoPeca = 0;
+        private char tipoPeca = '0';
 
-        public void setTipoPeca(int tipo) {
+        public void setTipoPeca(char tipo) {
             this.tipoPeca = tipo;
             repaint();
         }
@@ -186,19 +186,19 @@ public final class MainInterfaceGrafica extends JFrame {
 
             int margem = 10;
             // Brancas
-            if (tipoPeca == 1 || tipoPeca == 3) { 
+            if (tipoPeca == '1' || tipoPeca == '3') { 
                 g2.setColor(Color.WHITE);
                 g2.fillOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
                 g2.setColor(Color.BLACK);
                 g2.drawOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
             // Pretas
-            } else if (tipoPeca == 2 || tipoPeca == 4) { 
+            } else if (tipoPeca == '2' || tipoPeca == '4') { 
                 g2.setColor(Color.BLACK);
                 g2.fillOval(margem, margem, getWidth() - 2 * margem, getHeight() - 2 * margem);
             }
 
             // Representação de Dama (uma borda dourada)
-            if (tipoPeca > 2) { 
+            if (tipoPeca == '3' || tipoPeca == '4') { 
                 g2.setColor(Color.YELLOW);
                 g2.setStroke(new BasicStroke(3));
                 g2.drawOval(margem + 5, margem + 5, getWidth() - 2 * margem - 10, getHeight() - 2 * margem - 10);
