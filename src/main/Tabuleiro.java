@@ -8,8 +8,6 @@ public class Tabuleiro implements Cloneable {
     private char[][] matriz;
     private final int TAMANHO = 6;
     private int turno = 0; // 1 para brancas, 2 para pretas
-    private boolean casaDeOrigemValida = false;
-    private boolean casaDeDestinoValida = false;
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -54,62 +52,16 @@ public class Tabuleiro implements Cloneable {
     */
 
     private boolean verificarCasaOrigemVálida(int r, int c){
-        if (matriz[r][c] == 'X' || matriz[r][c] == '0') {
-            return false; // Casa inválida ou vazia
-        }
-
-        if (turno == 2 && (matriz[r][c] == '1' || matriz[r][c] == '3')) {
-            return false; // Casa de origem inválida para as pretas
-        } else if (turno == 1 && (matriz[r][c] == '2' || matriz[r][c] == '4')) {
-            return false; // Casa de origem inválida para as brancas
-        }
-        return true;
+        return !(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0');
     }
 
-    private boolean verificarCasaDestinoVálida(int r, int c){
-        if (matriz[r][c] == 'X') {
-            return false; // Casa inválida
+    private boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2){
+        if (this.matriz[r2][c2] == 'X' || this.matriz[r2][c2] != '0') {
+            return false;
         }
 
-        switch (matriz[r][c]) {
-            case '1': // Peça Branca
-                if (turno != 1) {
-                    return false; // Não é a vez das brancas
-                }
-                break;
-            case '2': // Peça Preta
-                if (turno != 2) {
-                    return false; // Não é a vez das pretas
-                }
-                break;
-            case '3': // Dama Branca
-                if (turno != 1) {
-                    return false; // Não é a vez das brancas
-                }
-                break;
-            case '4': // Dama Preta
-                if (turno != 2) {
-                    return false; // Não é a vez das pretas
-                }
-                break;
-            case '0': // Casa vazia
-                return true; // Casa de destino válida
-        }
-        return false;
-    }
-
-    public boolean fazerMovimento(int r1, int c1, int r2, int c2) {
-        
-        casaDeOrigemValida = verificarCasaOrigemVálida(r1, c1); // verificar se a casa de origem é válida
-        if (!casaDeOrigemValida) {
-            return false; // A casa de origem é inválida ou vazia
-        }
-
-        switch (this.matriz[r1][c1]){
-            case '1': // Peça Branca
-                if (c1 == c2){
-                    return false; // Impede movimentos verticais
-                }
+        switch (this.matriz[r1][c1]) {
+            case '1': // brancas
                 if (r2 < r1){ // Brancas só podem mover para cima
                     if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
                         // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
@@ -138,13 +90,9 @@ public class Tabuleiro implements Cloneable {
                             return false; 
                         }
                     }
-                    return false; 
                 } 
                 break;
             case '2': // Peça Preta
-                if (c1 == c2){
-                    return false; // Impede movimentos verticais
-                }
                 if (r2 > r1){ // Pretas só podem mover para baixo
                     if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
                         // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
@@ -173,16 +121,196 @@ public class Tabuleiro implements Cloneable {
                             return false; 
                         }
                     }
-                    return false; 
                 }
                 break;
-            case '3': // Dama Branca
-            case '4': // Dama Preta
-                // Damas podem mover em qualquer direção, então não há restrição aqui
+            default:
                 break;
         }
-
         return false;
+    }
+
+    private boolean verificarCasaDestinoVálidaDama(int r1, int c1, int r2, int c2){
+        if (this.matriz[r2][c2] == 'X' || this.matriz[r2][c2] != '0') {
+            return false;
+        }
+
+        if (c1 == c2 || r1 == r2){ // previne movimento horizontal ou vertical
+            return false;
+        }
+
+        int contagemPecasBrancas = 0;
+        int contagemPecasPretas = 0;
+        int linhaPeca = r1;
+        int colunaPeca = c1;
+        int tempR = r1;
+        int tempC = c1;
+
+        switch (this.matriz[r1][c1]){
+            case '3':
+                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){
+                    if(r2 > r1){
+                        if(c2 > c1){
+                            while(r2 > tempR){
+                                tempR++;
+                                tempC++;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        } else if (c2 < c1) {
+                            while(r2 > tempR){
+                                tempR++;
+                                tempC--;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                    contagemPecasPretas++;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        }
+                       
+                    } else if(r2 < r1){
+                        if(c2 > c1){
+                            while(r2 < tempR){
+                                tempR--;
+                                tempC++;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        } else if (c2 < c1) {
+                            while(r2 < tempR){
+                                tempR--;
+                                tempC--;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        }
+                    }
+                    if (contagemPecasPretas <= 1 && contagemPecasBrancas == 0){
+                        this.matriz[r1][c1] = '0';
+                        this.matriz[linhaPeca][colunaPeca] = '0';
+                        this.matriz[r2][c2] = '3';
+                        return true;
+                    }
+                }
+            break;
+            case '4':
+                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){
+                    if(r2 > r1){
+                        if(c2 > c1){
+                            tempR++;
+                            tempC++;
+                            while(r2 > tempR){
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                    contagemPecasBrancas++;
+                                }
+                                tempR++;
+                                tempC++;
+                            }
+                        } else if (c2 < c1) {
+                            while(r2 > tempR){
+                                tempR++;
+                                tempC--;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        }
+                    } else if(r2 < r1){
+                        if(c2 > c1){
+                            while(r2 < tempR){
+                                tempR--;
+                                tempC++;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        } else if (c2 < c1) {
+                            while(r2 < tempR){
+                                tempR--;
+                                tempC--;
+                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                    contagemPecasPretas++;
+                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                    linhaPeca = tempR;
+                                    colunaPeca = tempC;
+                                    contagemPecasBrancas++;
+                                }
+                            }
+                        }
+                    }
+                    if (contagemPecasPretas == 0 && contagemPecasBrancas <= 1){
+                        this.matriz[r1][c1] = '0';
+                        this.matriz[linhaPeca][colunaPeca] = '0';
+                        this.matriz[r2][c2] = '4';
+                        return true;
+                    }
+                }
+            break;
+            default:
+            break;
+        }
+        return false;
+    }
+
+    public boolean fazerMovimento(int r1, int c1, int r2, int c2) {
+        
+        boolean casaDeOrigemValida = verificarCasaOrigemVálida(r1, c1); // verificar se a casa de origem é válida
+        if (!casaDeOrigemValida) {
+            return false; // A casa de origem é inválida ou vazia
+        }
+
+        if ((c1 == c2) || (r1 == r2)){
+            return false; // Impede movimentos verticais ou horizontais
+        }
+
+        boolean podeMover; // verifica se é um movimento válido
+        if (this.matriz[r1][c1] == '1' || this.matriz[r1][c1] == '2'){
+            podeMover = verificarCasaDestinoVálidaComum(r1, c1, r2, c2);
+        } else{
+            podeMover = verificarCasaDestinoVálidaDama(r1, c1, r2, c2);
+        }
+        
+        System.out.println(podeMover);
+        if (podeMover){
+            if (this.turno == 1){
+                this.turno = 2;
+            } else {
+                this.turno = 1;
+            }
+        }
+
+        return podeMover;
     }
 
     public boolean verificaMovimento () {
@@ -191,7 +319,7 @@ public class Tabuleiro implements Cloneable {
     
 
     public char[][] getMatriz() {
-        return matriz;
+        return this.matriz;
     }
 
     public void setMatriz(char[][] matriz) {

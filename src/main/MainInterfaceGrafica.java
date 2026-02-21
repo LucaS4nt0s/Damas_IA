@@ -82,9 +82,15 @@ public final class MainInterfaceGrafica extends JFrame {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
             if (tabuleiroLogico.getMatriz()[linha][col] != '0' && tabuleiroLogico.getMatriz()[linha][col] != 'X') {
-                linhaOrigem = linha;
-                colOrigem = col;
-                tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
+                if (tabuleiroLogico.getTurno() == 1 && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3')) {
+                    linhaOrigem = linha;
+                    colOrigem = col;
+                    tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
+                } else if (tabuleiroLogico.getTurno() == 2 && (tabuleiroLogico.getMatriz()[linha][col] == '2' || tabuleiroLogico.getMatriz()[linha][col] == '4')) {
+                    linhaOrigem = linha;
+                    colOrigem = col;
+                    tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
+                }
             }
         } 
         // Caso 2: Já existe uma peça selecionada, tentando mover
@@ -101,7 +107,7 @@ public final class MainInterfaceGrafica extends JFrame {
             if (sucesso) {
                 cancelarSelecao();
                 sincronizarInterface();
-                
+    
                 /*
                     VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA
                 */
