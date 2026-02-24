@@ -8,6 +8,7 @@ public class Tabuleiro implements Cloneable {
     private char[][] matriz;
     private final int TAMANHO = 6;
     private int turno = 0; // 1 para brancas, 2 para pretas
+    private boolean comeu = false;
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -52,6 +53,8 @@ public class Tabuleiro implements Cloneable {
     */
 
     private boolean verificarSeTemPecaComivel(int r, int c){
+
+
         return true;              
     }
     
@@ -60,7 +63,7 @@ public class Tabuleiro implements Cloneable {
     }
 
     private boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2){
-        if (this.matriz[r2][c2] == 'X' || this.matriz[r2][c2] != '0') {
+        if (this.matriz[r2][c2] != '0') {
             return false;
         }
 
@@ -68,12 +71,12 @@ public class Tabuleiro implements Cloneable {
             case '1': // brancas
                 if (r2 < r1){ // Brancas só podem mover para cima
                     if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
-                        // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
                         if(r2 == r1 - 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
-                            this.matriz[r2][c2] = this.matriz[r1][c1];       
+                            this.matriz[r2][c2] = this.matriz[r1][c1];
                             if (this.matriz[r2][c2] == '1' && r2 == 0) {
                                 this.matriz[r2][c2] = '3';
                             }
+                            this.comeu = false;
                             this.matriz[r1][c1] = '0';
                             return true;
                         } else if (r2 == r1 - 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
@@ -86,6 +89,7 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
+                                this.comeu = true;
                                 return true;
                             } else {
                                 return false;
@@ -101,11 +105,12 @@ public class Tabuleiro implements Cloneable {
                     if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
                         // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
                         if(r2 == r1 + 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
-                            this.matriz[r2][c2] = this.matriz[r1][c1];
+                             this.matriz[r2][c2] = this.matriz[r1][c1];
                             if (this.matriz[r2][c2] == '2' && r2 == 5) {
                                 this.matriz[r2][c2] = '4';
                             }
                             this.matriz[r1][c1] = '0';
+                            this.comeu = false;
                             return true;
                         } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
                             int tempR = r1 + 1;
@@ -117,6 +122,7 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
+                                this.comeu = true;
                                 return true;
                             } else {
                                 return false;
@@ -134,7 +140,7 @@ public class Tabuleiro implements Cloneable {
     }
 
     private boolean verificarCasaDestinoVálidaDama(int r1, int c1, int r2, int c2){
-        if (this.matriz[r2][c2] == 'X' || this.matriz[r2][c2] != '0') {
+        if (this.matriz[r2][c2] != '0') {
             return false;
         }
 
@@ -142,141 +148,147 @@ public class Tabuleiro implements Cloneable {
             return false;
         }
 
-        int contagemPecasBrancas = 0;
-        int contagemPecasPretas = 0;
-        int linhaPeca = r1;
-        int colunaPeca = c1;
+        int contPecaBranca = 0;
+        int contPecaPreta = 0;
+        int linhaParada = -1;
+        int colunaParada = -1;
+        int proxLinha = -1;
+        int proxColuna = -1;
         int tempR = r1;
         int tempC = c1;
 
         switch (this.matriz[r1][c1]){
             case '3':
-                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){
+                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){ // é diagonal 
+                    if (Math.abs(r2 - r1) == 1){
+                        this.matriz[r1][c1] = '0';
+                        this.matriz[r2][c2] = '3';
+                        this.comeu = false;
+                        return true;
+                    }
                     if(r2 > r1){
-                        if(c2 > c1){
-                            while(r2 > tempR){
-                                tempR++;
+                        while(r2 > tempR){
+                            tempR++;
+                            if (c2 > c1){
                                 tempC++;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    contagemPecasBrancas++;
-                                }
-                            }
-                        } else if (c2 < c1) {
-                            while(r2 > tempR){
-                                tempR++;
+                            } else{
                                 tempC--;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                    contagemPecasPretas++;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    contagemPecasBrancas++;
+                            }
+                            if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                contPecaPreta++;
+                                linhaParada = tempR;
+                                colunaParada = tempC;
+                                proxLinha = tempR + 1;
+                                if (c2 > c1){
+                                    proxColuna = tempC + 1;
+                                } else{
+                                    proxColuna = tempC - 1;
                                 }
+                            } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') {
+                                contPecaBranca++;
                             }
                         }
-                       
                     } else if(r2 < r1){
-                        if(c2 > c1){
-                            while(r2 < tempR){
-                                tempR--;
+                        while(r2 < tempR){
+                            tempR--;
+                            if (c2 > c1){
                                 tempC++;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    contagemPecasBrancas++;
-                                }
-                            }
-                        } else if (c2 < c1) {
-                            while(r2 < tempR){
-                                tempR--;
+                            } else{
                                 tempC--;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    contagemPecasBrancas++;
+                            }
+                            if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
+                                contPecaPreta++;
+                                linhaParada = tempR;
+                                colunaParada = tempC;
+                                proxLinha = tempR - 1;
+                                if (c2 > c1){
+                                    proxColuna = tempC + 1;
+                                } else{
+                                    proxColuna = tempC - 1;
                                 }
+                            } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') {
+                                contPecaBranca++;
                             }
                         }
                     }
-                    if (contagemPecasPretas <= 1 && contagemPecasBrancas == 0){
+
+                    if(contPecaBranca == 0 && contPecaPreta == 1){
                         this.matriz[r1][c1] = '0';
-                        this.matriz[linhaPeca][colunaPeca] = '0';
+                        this.matriz[proxLinha][proxColuna] = '3';
+                        this.matriz[linhaParada][colunaParada] = '0';
+                        this.comeu = true;
+                        return true;
+                    } else if (contPecaBranca == 0 && contPecaPreta == 0){
+                        this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '3';
+                        this.comeu = false;
                         return true;
                     }
                 }
             break;
             case '4':
-                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){
+                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && this.matriz[r2][c2] == '0'){ // é diagonal 
+                    if (Math.abs(r2 - r1) == 1){
+                        this.matriz[r1][c1] = '0';
+                        this.matriz[r2][c2] = '4';
+                        return true;
+                    }
                     if(r2 > r1){
-                        if(c2 > c1){
+                        while(r2 > tempR){
                             tempR++;
-                            tempC++;
-                            while(r2 > tempR){
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                    contagemPecasBrancas++;
-                                }
-                                tempR++;
+                            if (c2 > c1){
                                 tempC++;
-                            }
-                        } else if (c2 < c1) {
-                            while(r2 > tempR){
-                                tempR++;
+                            } else{
                                 tempC--;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                    contagemPecasBrancas++;
+                            }
+                            if(this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                contPecaBranca++;
+                                linhaParada = tempR;
+                                colunaParada = tempC;
+                                proxLinha = tempR + 1;
+                                if (c2 > c1){
+                                    proxColuna = tempC + 1;
+                                } else{
+                                    proxColuna = tempC - 1;
                                 }
+                            } else if (this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4') {
+                                contPecaPreta++;
                             }
                         }
                     } else if(r2 < r1){
-                        if(c2 > c1){
-                            while(r2 < tempR){
-                                tempR--;
+                        while(r2 < tempR){
+                            tempR--;
+                            if (c2 > c1){
                                 tempC++;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                    contagemPecasBrancas++;
-                                }
-                            }
-                        } else if (c2 < c1) {
-                            while(r2 < tempR){
-                                tempR--;
+                            } else{
                                 tempC--;
-                                if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                    contagemPecasPretas++;
-                                } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                    linhaPeca = tempR;
-                                    colunaPeca = tempC;
-                                    contagemPecasBrancas++;
+                            }
+                            if(this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
+                                contPecaBranca++;
+                                linhaParada = tempR;
+                                colunaParada = tempC;
+                                proxLinha = tempR - 1;
+                                if (c2 > c1){
+                                    proxColuna = tempC + 1;
+                                } else{
+                                    proxColuna = tempC - 1;
                                 }
+                            } else if (this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4') {
+                                contPecaPreta++;
                             }
                         }
                     }
-                    if (contagemPecasPretas == 0 && contagemPecasBrancas <= 1){
+
+                    if(contPecaBranca == 1 && contPecaPreta == 0){
                         this.matriz[r1][c1] = '0';
-                        this.matriz[linhaPeca][colunaPeca] = '0';
+                        this.matriz[proxLinha][proxColuna] = '4';
+                        this.matriz[linhaParada][colunaParada] = '0';
+                        this.comeu = true;
+                        return true;
+                    } else if (contPecaBranca == 0 && contPecaPreta == 0){
+                        this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '4';
+                        this.comeu = false;
                         return true;
                     }
                 }
@@ -306,7 +318,7 @@ public class Tabuleiro implements Cloneable {
         }
         
         System.out.println(podeMover);
-        if (podeMover){
+        if (podeMover && this.comeu == false){
             if (this.turno == 1){
                 this.turno = 2;
             } else {
