@@ -51,6 +51,10 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
+    private boolean verificarCasasProximas(int r, int c){
+        return true;
+    }
+    
     private boolean verificarCasaOrigemVálida(int r, int c){
         return !(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0');
     }
