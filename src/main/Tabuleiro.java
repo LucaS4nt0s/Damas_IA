@@ -61,26 +61,37 @@ public class Tabuleiro implements Cloneable {
 
         int casaOcupada = 0;
 
+        System.out.println("r: " + r + " c: " + c);
+        System.out.println(this.matriz[r][c]);
         switch (this.matriz[r][c]) {
             case '1':
-                for(int i = 1; i <= -1; i = i - 2){
-                    for(int j = 1; j <= -1; j = j - 2){
-                        if(this.matriz[r+i][c+j] == '2' || this.matriz[r+i][c+j] == '4'){
-                            if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
-                                return true;
-                            }
-                        }
+                if(r < 2){
+                    return false;
+                }
+                if(this.matriz[r-1][c+1] == '2' || this.matriz[r-1][c+1] == '4'){
+                    if(this.matriz[r-2][c+2] == '0'){
+                        return true;
                     }
                 }
+                if(this.matriz[r-1][c-1] == '2' || this.matriz[r-1][c-1] == '4'){
+                    if(this.matriz[r-2][c-2] == '0'){
+                        return true;
+                    }
+                }
+                
                 break;
             case '2':
-                for(int i = 1; i <= -1; i = i - 2){
-                    for(int j = 1; j <= -1; j = j - 2){
-                        if(this.matriz[r+i][c+j] == '1' || this.matriz[r+i][c+j] == '3'){
-                            if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
-                                return true;
-                            }
-                        }
+                if(r > 3){
+                    return false;
+                }
+                if(this.matriz[r+1][c+1] == '1' || this.matriz[r-1][c+1] == '3'){
+                    if(this.matriz[r+2][c+2] == '0'){
+                        return true;
+                    }
+                }
+                if(this.matriz[r+1][c-1] == '1' || this.matriz[r-1][c-1] == '3'){
+                    if(this.matriz[r+2][c-2] == '0'){
+                        return true;
                     }
                 }
                 break;
@@ -91,7 +102,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            return false;
+                            break;
                         }
 
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -104,7 +115,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            return false;
+                            break;
                         }
                         
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -115,11 +126,11 @@ public class Tabuleiro implements Cloneable {
                 
                 for(int i = r - 1; i >= 0; i--){
                     casaOcupada = 0;
-                    for(int j = c + 1; j < 6; j++){
+                    for(int j = c + 1;j < 6; j++){
                         if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            return false;
+                            break;
                         }
 
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -129,10 +140,10 @@ public class Tabuleiro implements Cloneable {
                     
                     casaOcupada = 0;
                     for(int j = c - 1;j >= 0; j--){
-                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
                             casaOcupada++;
-                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            return false;
+                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            break;
                         }
                         
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -148,7 +159,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            return false;
+                            break;
                         }
 
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -161,7 +172,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            return false;
+                            break;
                         }
                         
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -176,7 +187,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            return false;
+                            break;
                         }
 
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -189,7 +200,7 @@ public class Tabuleiro implements Cloneable {
                         if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            return false;
+                            break;
                         }
                         
                         if(this.matriz[i][j] == '0' && casaOcupada == 1){
@@ -237,6 +248,7 @@ public class Tabuleiro implements Cloneable {
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
                                 this.comeu = podeComer(r2, c2);
+                                System.out.println("comeu" + comeu);
                                 return true;
                             } else {
                                 return false;
@@ -269,6 +281,7 @@ public class Tabuleiro implements Cloneable {
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
                                 this.comeu = podeComer(r2, c2);
+                                System.out.println("comeu" + comeu);
                                 return true;
                             } else {
                                 return false;
@@ -362,6 +375,7 @@ public class Tabuleiro implements Cloneable {
                         this.matriz[proxLinha][proxColuna] = '3';
                         this.matriz[linhaParada][colunaParada] = '0';
                         this.comeu = podeComer(proxLinha, proxColuna);
+                        System.out.println("comeu" + comeu);
                         return true;
                     } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
@@ -429,6 +443,7 @@ public class Tabuleiro implements Cloneable {
                         this.matriz[proxLinha][proxColuna] = '4';
                         this.matriz[linhaParada][colunaParada] = '0';
                         this.comeu = podeComer(proxLinha, proxColuna);
+                        System.out.println("comeu" + comeu);
                         return true;
                     } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
