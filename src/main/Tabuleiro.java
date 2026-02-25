@@ -63,8 +63,8 @@ public class Tabuleiro implements Cloneable {
 
         switch (this.matriz[r][c]) {
             case '1':
-                for(int i = 1; i < -1; i = i - 2){
-                    for(int j = 1; j < -1; j = j - 2){
+                for(int i = 1; i <= -1; i = i - 2){
+                    for(int j = 1; j <= -1; j = j - 2){
                         if(this.matriz[r+i][c+j] == '2' || this.matriz[r+i][c+j] == '4'){
                             if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
                                 return true;
@@ -74,8 +74,8 @@ public class Tabuleiro implements Cloneable {
                 }
                 break;
             case '2':
-                for(int i = 1; i < -1; i = i - 2){
-                    for(int j = 1; j < -1; j = j - 2){
+                for(int i = 1; i <= -1; i = i - 2){
+                    for(int j = 1; j <= -1; j = j - 2){
                         if(this.matriz[r+i][c+j] == '1' || this.matriz[r+i][c+j] == '3'){
                             if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
                                 return true;
@@ -115,7 +115,7 @@ public class Tabuleiro implements Cloneable {
                 
                 for(int i = r - 1; i >= 0; i--){
                     casaOcupada = 0;
-                    for(int j = c + 1;j < 6; j++){
+                    for(int j = c + 1; j < 6; j++){
                         if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
                             casaOcupada++;
                         } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
@@ -142,7 +142,6 @@ public class Tabuleiro implements Cloneable {
                 }
                 break;
             case '4':
-
                 for(int i = r + 1; i < 6; i++){
                     casaOcupada = 0;
                     for(int j = c + 1;j < 6; j++){
