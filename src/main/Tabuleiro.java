@@ -1,5 +1,7 @@
 package main;
 
+import java.util.ArrayList;
+
 /**
  * @author Douglas
  */
@@ -52,10 +54,156 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
-    private boolean verificarSeTemPecaComivel(int r, int c){
+    private boolean podeComer(int r, int c){
+        if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
+            return false;
+        }
 
+        int casaOcupada = 0;
 
-        return true;              
+        switch (this.matriz[r][c]) {
+            case '1':
+                for(int i = 1; i < -1; i = i - 2){
+                    for(int j = 1; j < -1; j = j - 2){
+                        if(this.matriz[r+i][c+j] == '2' || this.matriz[r+i][c+j] == '4'){
+                            if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                }
+                break;
+            case '2':
+                for(int i = 1; i < -1; i = i - 2){
+                    for(int j = 1; j < -1; j = j - 2){
+                        if(this.matriz[r+i][c+j] == '1' || this.matriz[r+i][c+j] == '3'){
+                            if(this.matriz[r+(2*i)][c+(2*j)] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                }
+                break;
+            case '3':
+                for(int i = r + 1; i < 6; i++){
+                    casaOcupada = 0;
+                    for(int j = c + 1;j < 6; j++){
+                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            return false;
+                        }
+
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                    
+                    casaOcupada = 0;
+                    for(int j = c - 1;j >= 0; j--){
+                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            return false;
+                        }
+                        
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                }
+                
+                for(int i = r - 1; i >= 0; i--){
+                    casaOcupada = 0;
+                    for(int j = c + 1;j < 6; j++){
+                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            return false;
+                        }
+
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                    
+                    casaOcupada = 0;
+                    for(int j = c - 1;j >= 0; j--){
+                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            return false;
+                        }
+                        
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case '4':
+
+                for(int i = r + 1; i < 6; i++){
+                    casaOcupada = 0;
+                    for(int j = c + 1;j < 6; j++){
+                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            return false;
+                        }
+
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                    
+                    casaOcupada = 0;
+                    for(int j = c - 1;j >= 0; j--){
+                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            return false;
+                        }
+                        
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                }
+                
+                for(int i = r - 1; i >= 0; i--){
+                    casaOcupada = 0;
+                    for(int j = c + 1;j < 6; j++){
+                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            return false;
+                        }
+
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                    
+                    casaOcupada = 0;
+                    for(int j = c - 1;j >= 0; j--){
+                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
+                            casaOcupada++;
+                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
+                            return false;
+                        }
+                        
+                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return false;              
     }
     
     private boolean verificarCasaOrigemVálida(int r, int c){
@@ -89,7 +237,7 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
-                                this.comeu = true;
+                                this.comeu = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
@@ -100,10 +248,9 @@ public class Tabuleiro implements Cloneable {
                     }
                 } 
                 break;
-            case '2': // Peça Preta
-                if (r2 > r1){ // Pretas só podem mover para baixo
-                    if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
-                        // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
+            case '2': 
+                if (r2 > r1){ 
+                    if (this.matriz[r2][c2] == '0') { 
                         if(r2 == r1 + 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
                              this.matriz[r2][c2] = this.matriz[r1][c1];
                             if (this.matriz[r2][c2] == '2' && r2 == 5) {
@@ -112,17 +259,17 @@ public class Tabuleiro implements Cloneable {
                             this.matriz[r1][c1] = '0';
                             this.comeu = false;
                             return true;
-                        } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
+                        } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) {
                             int tempR = r1 + 1;
                             int tempC = (c2 == c1 - 2) ? c1 - 1 : c1 + 1;
-                            if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') { // Verifica se a peça adversária está na casa intermediária
+                            if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') { 
                                 this.matriz[r2][c2] = this.matriz[r1][c1];
                                 if (this.matriz[r2][c2] == '2' && r2 == 5) {
                                     this.matriz[r2][c2] = '4';
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
-                                this.comeu = true;
+                                this.comeu = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
@@ -148,8 +295,7 @@ public class Tabuleiro implements Cloneable {
             return false;
         }
 
-        int contPecaBranca = 0;
-        int contPecaPreta = 0;
+        int contPeca = 0;
         int linhaParada = -1;
         int colunaParada = -1;
         int proxLinha = -1;
@@ -175,7 +321,7 @@ public class Tabuleiro implements Cloneable {
                                 tempC--;
                             }
                             if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                contPecaPreta++;
+                                contPeca++;
                                 linhaParada = tempR;
                                 colunaParada = tempC;
                                 proxLinha = tempR + 1;
@@ -185,7 +331,7 @@ public class Tabuleiro implements Cloneable {
                                     proxColuna = tempC - 1;
                                 }
                             } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') {
-                                contPecaBranca++;
+                                return false;
                             }
                         }
                     } else if(r2 < r1){
@@ -197,7 +343,7 @@ public class Tabuleiro implements Cloneable {
                                 tempC--;
                             }
                             if(this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4'){
-                                contPecaPreta++;
+                                contPeca++;
                                 linhaParada = tempR;
                                 colunaParada = tempC;
                                 proxLinha = tempR - 1;
@@ -207,18 +353,18 @@ public class Tabuleiro implements Cloneable {
                                     proxColuna = tempC - 1;
                                 }
                             } else if (this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3') {
-                                contPecaBranca++;
+                                return false;
                             }
                         }
                     }
 
-                    if(contPecaBranca == 0 && contPecaPreta == 1){
+                    if(contPeca == 1){
                         this.matriz[r1][c1] = '0';
                         this.matriz[proxLinha][proxColuna] = '3';
                         this.matriz[linhaParada][colunaParada] = '0';
-                        this.comeu = true;
+                        this.comeu = podeComer(proxLinha, proxColuna);
                         return true;
-                    } else if (contPecaBranca == 0 && contPecaPreta == 0){
+                    } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '3';
                         this.comeu = false;
@@ -242,7 +388,7 @@ public class Tabuleiro implements Cloneable {
                                 tempC--;
                             }
                             if(this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                contPecaBranca++;
+                                contPeca++;
                                 linhaParada = tempR;
                                 colunaParada = tempC;
                                 proxLinha = tempR + 1;
@@ -252,7 +398,7 @@ public class Tabuleiro implements Cloneable {
                                     proxColuna = tempC - 1;
                                 }
                             } else if (this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4') {
-                                contPecaPreta++;
+                                return false;
                             }
                         }
                     } else if(r2 < r1){
@@ -264,7 +410,7 @@ public class Tabuleiro implements Cloneable {
                                 tempC--;
                             }
                             if(this.matriz[tempR][tempC] == '1' || this.matriz[tempR][tempC] == '3'){
-                                contPecaBranca++;
+                                contPeca++;
                                 linhaParada = tempR;
                                 colunaParada = tempC;
                                 proxLinha = tempR - 1;
@@ -274,18 +420,18 @@ public class Tabuleiro implements Cloneable {
                                     proxColuna = tempC - 1;
                                 }
                             } else if (this.matriz[tempR][tempC] == '2' || this.matriz[tempR][tempC] == '4') {
-                                contPecaPreta++;
+                                return false;
                             }
                         }
                     }
 
-                    if(contPecaBranca == 1 && contPecaPreta == 0){
+                    if(contPeca == 1){
                         this.matriz[r1][c1] = '0';
                         this.matriz[proxLinha][proxColuna] = '4';
                         this.matriz[linhaParada][colunaParada] = '0';
-                        this.comeu = true;
+                        this.comeu = podeComer(proxLinha, proxColuna);
                         return true;
-                    } else if (contPecaBranca == 0 && contPecaPreta == 0){
+                    } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '4';
                         this.comeu = false;
