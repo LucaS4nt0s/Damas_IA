@@ -121,116 +121,112 @@ public class Tabuleiro implements Cloneable {
                 }
                 break;
             case '3':
-                for(int i = r + 1; i < 6; i++){
-                    casaOcupada = 0;
-                    for(int j = c + 1;j < 6; j++){
-                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            break;
-                        }
-
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                casaOcupada = 0;
+                for(int i = 1; r + i < 6 && c + i < 6; i++){
+                    if(this.matriz[r+i][c+i] == '2' || this.matriz[r+i][c+i] == '4'){
+                        casaOcupada++;
+                    } else if(this.matriz[r+i][c+i] == '1' || this.matriz[r+i][c+i] == '3'){
+                        break;
                     }
+
+                    if(this.matriz[r+i][c+i] == '0' && casaOcupada == 1){
+                        return true;
+                    }
+                }
                     
-                    casaOcupada = 0;
-                    for(int j = c - 1;j >= 0; j--){
-                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            break;
-                        }
-                        
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                casaOcupada = 0;
+                for(int i = 1; r + i < 6 && c - i >= 0; i++){
+                    if(this.matriz[r+i][c-i] == '2' || this.matriz[r+i][c-i] == '4'){
+                        casaOcupada++;
+                    } else if(this.matriz[r+i][c-i] == '1' || this.matriz[r+i][c-i] == '3'){
+                        break;
+                    }
+
+                    if(this.matriz[r+i][c-i] == '0' && casaOcupada == 1){
+                        return true;
                     }
                 }
                 
-                for(int i = r - 1; i >= 0; i--){
-                    casaOcupada = 0;
-                    for(int j = c + 1;j < 6; j++){
-                        if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            break;
-                        }
+                
+                casaOcupada = 0;
+                for(int i = 1; r - i >= 0 && c + i < 6; i++){
+                    if(this.matriz[r-i][c+i] == '2' || this.matriz[r-i][c+i] == '4'){
+                        casaOcupada++;
+                    } else if(this.matriz[r-i][c+i] == '1' || this.matriz[r-i][c+i] == '3'){
+                        break;
+                    }
 
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                    if(this.matriz[r-i][c+i] == '0' && casaOcupada == 1){
+                        return true;
                     }
                     
-                    casaOcupada = 0;
-                    for(int j = c - 1;j >= 0; j--){
-                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            break;
-                        }
-                        
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                }
+                    
+                casaOcupada = 0;
+                for(int i = 1; r - i >= 0 && c - i >= 0; i++){
+                    if(this.matriz[r-i][c-i] == '2' || this.matriz[r-i][c-i] == '4'){
+                        casaOcupada++;
+                    } else if(this.matriz[r-i][c-i] == '1' || this.matriz[r-i][c-i] == '3'){
+                        break;
+                    }
+
+                    if(this.matriz[r-i][c-i] == '0' && casaOcupada == 1){
+                        return true;
                     }
                 }
+
                 break;
             case '4':
-                for(int i = r + 1; i < 6; i++){
-                    casaOcupada = 0;
-                    for(int j = c + 1;j < 6; j++){
-                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            break;
-                        }
-
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                casaOcupada = 0;
+                for(int i = 1; r + i < 6 && c + i < 6; i++){
+                    if(this.matriz[r+i][c+i] == '1' || this.matriz[r+i][c+i] == '3'){
+                        casaOcupada++;
+                    } else if(this.matriz[r+i][c+i] == '2' || this.matriz[r+i][c+i] == '4'){
+                        break;
                     }
+
+                    if(this.matriz[r+i][c+i] == '0' && casaOcupada == 1){
+                        return true;
+                    }
+                }
+
                     
-                    casaOcupada = 0;
-                    for(int j = c - 1;j >= 0; j--){
-                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            break;
-                        }
-                        
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                casaOcupada = 0;
+                for(int i = 1; r + i < 6 && c - i >= 0; i++){
+                    if(this.matriz[r+i][c-i] == '1' || this.matriz[r+i][c-i] == '3'){
+                        casaOcupada++;
+                    } else if(this.matriz[r+i][c-i] == '2' || this.matriz[r+i][c-i] == '4'){
+                        break;
+                    }
+
+                    if(this.matriz[r+i][c-i] == '0' && casaOcupada == 1){
+                        return true;
                     }
                 }
                 
-                for(int i = r - 1; i >= 0; i--){
-                    casaOcupada = 0;
-                    for(int j = c + 1;j < 6; j++){
-                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            break;
-                        }
-
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+                casaOcupada = 0;
+                for(int i = 1; r - i >= 0 && c + i < 6; i++){
+                    if(this.matriz[r-i][c+i] == '1' || this.matriz[r-i][c+i] == '3'){
+                        casaOcupada++;
+                    } else if(this.matriz[r-i][c+i] == '2' || this.matriz[r-i][c+i] == '4'){
+                        break;
                     }
-                    
-                    casaOcupada = 0;
-                    for(int j = c - 1;j >= 0; j--){
-                        if(this.matriz[i][j] == '1' || this.matriz[i][j] == '3'){
-                            casaOcupada++;
-                        } else if(this.matriz[i][j] == '2' || this.matriz[i][j] == '4'){
-                            break;
-                        }
-                        
-                        if(this.matriz[i][j] == '0' && casaOcupada == 1){
-                            return true;
-                        }
+
+                    if(this.matriz[r-i][c+i] == '0' && casaOcupada == 1){
+                        return true;
+                    }
+                }    
+
+                casaOcupada = 0;
+                for(int i = 1; r - i >= 0 && c - i >= 0; i++){
+                    if(this.matriz[r-i][c-i] == '1' || this.matriz[r-i][c-i] == '3'){
+                        casaOcupada++;
+                    } else if(this.matriz[r-i][c-i] == '2' || this.matriz[r-i][c-i] == '4'){
+                        break;
+                    }
+
+                    if(this.matriz[r-i][c-i] == '0' && casaOcupada == 1){
+                        return true;
                     }
                 }
                 break;
