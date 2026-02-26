@@ -22,11 +22,7 @@ public class Peca {
     }
 
     public void setTipo(char novoTipo){
-        if(this.tipo == '1' && novoTipo == '3'){
-            this.tipo = novoTipo;
-        } else if(this.tipo == '2' && novoTipo == '4'){
-            this.tipo = novoTipo;
-        }
+        this.tipo = novoTipo;
     }
 
     public int getLinha(){

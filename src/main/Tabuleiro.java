@@ -72,7 +72,7 @@ public class Tabuleiro implements Cloneable {
             return false;
         }
 
-        int casaOcupada = 0;
+        int casaOcupada;
 
         System.out.println("r: " + r + " c: " + c);
         System.out.println(this.matriz[r][c]);
@@ -90,7 +90,7 @@ public class Tabuleiro implements Cloneable {
                     }
                 }
                 
-                if(c > 2){
+                if(c > 1){
                     if(this.matriz[r-1][c-1] == '2' || this.matriz[r-1][c-1] == '4'){
                         if(this.matriz[r-2][c-2] == '0'){
                             return true;
@@ -112,7 +112,7 @@ public class Tabuleiro implements Cloneable {
                     }
                 }
 
-                if(c > 2){
+                if(c > 1){
                     if(this.matriz[r+1][c-1] == '1' || this.matriz[r+1][c-1] == '3'){
                         if(this.matriz[r+2][c-2] == '0'){
                             return true;
@@ -297,8 +297,8 @@ public class Tabuleiro implements Cloneable {
                                     peca.setLinha(r2);
                                     peca.setColuna(c2);
                                 }
-                                if (this.matriz[r2][c2] == '1' && r2 == 0) {
-                                    peca.setTipo('3');
+                                if (peca.getLinha() == 0 && peca.getTipo() == '1') {
+                                        peca.setTipo('3');
                                 }
                             }
                             return true;
@@ -312,18 +312,18 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
-                                this.comeu = podeComer(r2, c2);
                                 for(Peca peca: pecas){
                                     if(peca.getLinha() == r1 && peca.getColuna() == c1){
                                         peca.setLinha(r2);
                                         peca.setColuna(c2);
                                     }
-                                    if (this.matriz[r2][c2] == '1' && r2 == 0) {
+                                    if (peca.getLinha() == 0 && peca.getTipo() == '1') {
                                         peca.setTipo('3');
                                     }
                                 }
                                 pecas.removeIf(p -> p.getLinha() == tempR && p.getColuna() == tempC);
                                 pecasPretas--;
+                                this.comeu = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
@@ -352,8 +352,8 @@ public class Tabuleiro implements Cloneable {
                                     peca.setLinha(r2);
                                     peca.setColuna(c2);
                                 }
-                                if (this.matriz[r2][c2] == '2' && r2 == 5) {
-                                    peca.setTipo('4');
+                                if (peca.getLinha() == 5 && peca.getTipo() == '2') {
+                                        peca.setTipo('4');
                                 }
                             }
                             return true;
@@ -367,18 +367,18 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
-                                this.comeu = podeComer(r2, c2);
                                 for(Peca peca: pecas){
                                     if(peca.getLinha() == r1 && peca.getColuna() == c1){
                                         peca.setLinha(r2);
                                         peca.setColuna(c2);
                                     }
-                                    if (this.matriz[r2][c2] == '2' && r2 == 5) {
+                                    if (peca.getLinha() == 5 && peca.getTipo() == '2') {
                                         peca.setTipo('4');
                                     }
                                 }
                                 pecas.removeIf(p -> p.getLinha() == tempR && p.getColuna() == tempC);
                                 pecasBrancas--;
+                                this.comeu = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
