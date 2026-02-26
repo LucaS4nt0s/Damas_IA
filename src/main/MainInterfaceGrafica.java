@@ -1,8 +1,8 @@
 package main;
 
 import java.awt.*;
-import javax.swing.*;
 import java.util.ArrayList;
+import javax.swing.*;
 
 /**
  * @author Douglas
@@ -175,13 +175,12 @@ public final class MainInterfaceGrafica extends JFrame {
             System.out.println(); // Nova linha após imprimir toda a matriz
         }
         System.out.println("--------------------------------------------------");
-
+        
         ArrayList<Peca> pecas = tabuleiroLogico.getPecas();
-
+        
         for(Peca peca: pecas){
             System.out.println(peca.toString());
         }
-
     }
 
     private class CasaBotao extends JButton {
