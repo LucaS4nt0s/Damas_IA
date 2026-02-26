@@ -11,6 +11,9 @@ public class Tabuleiro implements Cloneable {
     private final int TAMANHO = 6;
     private int turno = 0; // 1 para brancas, 2 para pretas
     private boolean comeu = false;
+    private boolean obrigadoComer = false;
+    private ArrayList<Peca> pecas = new ArrayList<>();
+    private int id = 0;
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -23,8 +26,14 @@ public class Tabuleiro implements Cloneable {
                 if ((i + j) % 2 != 0) {
                     if (i < 2) {
                         matriz[i][j] = '2'; // Pretas
+                        Peca peca = new Peca(this.id, '2', i, j);
+                        pecas.addLast(peca);
+                        id++;
                     } else if (i > 3) {
                         matriz[i][j] = '1'; // Brancas
+                        Peca peca = new Peca(this.id, '1', i, j);
+                        pecas.addFirst(peca);
+                        id++;
                     } else {
                         matriz[i][j] = '0'; // Vazio
                     }
@@ -215,9 +224,31 @@ public class Tabuleiro implements Cloneable {
 
         return false;              
     }
+
+    private void verificarAlgumaPecaPodeComer(){
+        for(Peca peca: pecas){
+            if(this.turno == 1){
+                if(peca.getTipo() == '1'){
+                    obrigadoComer = podeComer(peca.getLinha(), peca.getColuna());
+                }
+            } else if (this.turno == 2){
+                if(peca.getTipo() == '2'){
+                    obrigadoComer = podeComer(peca.getLinha(), peca.getColuna());
+                }
+            }
+        }
+    }
     
     private boolean verificarCasaOrigemVálida(int r, int c){
-        return !(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0');
+        if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
+            return false;
+        }
+        
+        if(obrigadoComer){
+            return podeComer(r, c);
+        } else {
+            return true;
+        }
     }
 
     private boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2){
@@ -236,6 +267,15 @@ public class Tabuleiro implements Cloneable {
                             }
                             this.comeu = false;
                             this.matriz[r1][c1] = '0';
+                            for(Peca peca: pecas){
+                                if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                    peca.setLinha(r2);
+                                    peca.setColuna(r2);
+                                }
+                                if (this.matriz[r2][c2] == '1' && r2 == 0) {
+                                    peca.setTipo('3');
+                                }
+                            }
                             return true;
                         } else if (r2 == r1 - 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
                             int tempR = r1 - 1;
@@ -248,7 +288,18 @@ public class Tabuleiro implements Cloneable {
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
                                 this.comeu = podeComer(r2, c2);
-                                System.out.println("comeu" + comeu);
+                                for(Peca peca: pecas){
+                                    if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                        peca.setLinha(r2);
+                                        peca.setColuna(c2);
+                                    }
+                                    if(peca.getLinha() == tempR && peca.getColuna() == tempC){
+                                        pecas.remove(peca);
+                                    }
+                                    if (this.matriz[r2][c2] == '1' && r2 == 0) {
+                                        peca.setTipo('3');
+                                    }
+                                }
                                 return true;
                             } else {
                                 return false;
@@ -269,6 +320,15 @@ public class Tabuleiro implements Cloneable {
                             }
                             this.matriz[r1][c1] = '0';
                             this.comeu = false;
+                            for(Peca peca: pecas){
+                                if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                    peca.setLinha(r2);
+                                    peca.setColuna(r2);
+                                }
+                                if (this.matriz[r2][c2] == '2' && r2 == 5) {
+                                    peca.setTipo('4');
+                                }
+                            }
                             return true;
                         } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) {
                             int tempR = r1 + 1;
@@ -281,7 +341,18 @@ public class Tabuleiro implements Cloneable {
                                 this.matriz[r1][c1] = '0';
                                 this.matriz[tempR][tempC] = '0';
                                 this.comeu = podeComer(r2, c2);
-                                System.out.println("comeu" + comeu);
+                                for(Peca peca: pecas){
+                                    if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                        peca.setLinha(r2);
+                                        peca.setColuna(c2);
+                                    }
+                                    if(peca.getLinha() == tempR && peca.getColuna() == tempC){
+                                        pecas.remove(peca);
+                                    }
+                                    if (this.matriz[r2][c2] == '2' && r2 == 5) {
+                                        peca.setTipo('4');
+                                    }
+                                }
                                 return true;
                             } else {
                                 return false;
@@ -322,6 +393,12 @@ public class Tabuleiro implements Cloneable {
                         this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '3';
                         this.comeu = false;
+                        for(Peca peca: pecas){
+                            if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                peca.setLinha(proxLinha);
+                                peca.setColuna(proxColuna);
+                            }
+                        }
                         return true;
                     }
                     if(r2 > r1){
@@ -375,12 +452,26 @@ public class Tabuleiro implements Cloneable {
                         this.matriz[proxLinha][proxColuna] = '3';
                         this.matriz[linhaParada][colunaParada] = '0';
                         this.comeu = podeComer(proxLinha, proxColuna);
-                        System.out.println("comeu" + comeu);
+                        for(Peca peca: pecas){
+                            if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                peca.setLinha(proxLinha);
+                                peca.setColuna(proxColuna);
+                            }
+                            if(peca.getLinha() == linhaParada && peca.getColuna() == colunaParada){
+                                pecas.remove(peca);
+                            }
+                        }
                         return true;
                     } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '3';
                         this.comeu = false;
+                        for(Peca peca: pecas){
+                            if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                peca.setLinha(proxLinha);
+                                peca.setColuna(proxColuna);
+                            }
+                        }
                         return true;
                     }
                 }
@@ -442,12 +533,26 @@ public class Tabuleiro implements Cloneable {
                         this.matriz[r1][c1] = '0';
                         this.matriz[proxLinha][proxColuna] = '4';
                         this.matriz[linhaParada][colunaParada] = '0';
+                        for(Peca peca: pecas){
+                            if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                peca.setLinha(proxLinha);
+                                peca.setColuna(proxColuna);
+                            }
+                            if(peca.getLinha() == linhaParada && peca.getColuna() == colunaParada){
+                                pecas.remove(peca);
+                            }
+                        }
                         this.comeu = podeComer(proxLinha, proxColuna);
-                        System.out.println("comeu" + comeu);
                         return true;
                     } else if (contPeca == 0){
                         this.matriz[r1][c1] = '0';
                         this.matriz[r2][c2] = '4';
+                        for(Peca peca: pecas){
+                            if(peca.getLinha() == r1 && peca.getColuna() == c1){
+                                peca.setLinha(proxLinha);
+                                peca.setColuna(proxColuna);
+                            }
+                        }
                         this.comeu = false;
                         return true;
                     }
@@ -461,6 +566,7 @@ public class Tabuleiro implements Cloneable {
 
     public boolean fazerMovimento(int r1, int c1, int r2, int c2) {
         
+        verificarAlgumaPecaPodeComer();
         boolean casaDeOrigemValida = verificarCasaOrigemVálida(r1, c1); // verificar se a casa de origem é válida
         if (!casaDeOrigemValida) {
             return false; // A casa de origem é inválida ou vazia
@@ -486,6 +592,7 @@ public class Tabuleiro implements Cloneable {
             }
         }
 
+        System.out.println(pecas);
         return podeMover;
     }
 
@@ -508,5 +615,9 @@ public class Tabuleiro implements Cloneable {
 
     public void setTurno(int turno) {
         this.turno = turno;
+    }
+
+    public ArrayList<Peca> getPecas(){
+        return this.pecas;
     }
 }
