@@ -68,50 +68,52 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
-    // public ArrayList<Jogada> retornaJogadasPossiveis(char[][] tabuleiro, char vez){
+    public ArrayList<Jogada> retornaJogadasPossiveis(ArrayList<Peca> pecas, char vez){
 
-    //     if(verificarAlgumaPecaPodeComer()){
-    //         for(Peca peca:pecas){
-    //             switch (peca.getTipo()) {
-    //                 case '1':
+        if(verificarAlgumaPecaPodeComer()){
+            for(Peca peca:pecas){
+                if(podeComer(peca.getLinha(), peca.getColuna())){
+                    switch (peca.getTipo()) {
+                        case '1':
+                            
+                            break;
+                        case '2':
+                            
+                            break;
+                        case '3':
+                            
+                            break;
+                        case '4':
+                            
+                            break;
+                        default:
+                            break;
+                    }
+                } 
+            }
+        } else{
+            for(Peca peca:pecas){
+                switch (peca.getTipo()) {
+                    case '1':
                         
-    //                     break;
-    //                 case '2':
+                        break;
+                    case '2':
                         
-    //                     break;
-    //                 case '3':
+                        break;
+                    case '3':
                         
-    //                     break;
-    //                 case '4':
+                        break;
+                    case '4':
                         
-    //                     break;
-    //                 default:
-    //                     break;
-    //             }
-    //         }
-    //     } else{
-    //         for(Peca peca:pecas){
-    //             switch (peca.getTipo()) {
-    //                 case '1':
-                        
-    //                     break;
-    //                 case '2':
-                        
-    //                     break;
-    //                 case '3':
-                        
-    //                     break;
-    //                 case '4':
-                        
-    //                     break;
-    //                 default:
-    //                     break;
-    //             }
-    //         }
-    //     }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
-    //     return jogadasPossiveis;
-    // }
+        return jogadasPossiveis;
+    }
 
     public boolean podeComer(int r, int c){
         if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
