@@ -16,6 +16,7 @@ public class Tabuleiro implements Cloneable {
     private int id;
     private int pecasPretas = 6;
     private int pecasBrancas = 6;
+    private ArrayList<Jogada> jogadasPossiveis;
 
     public Tabuleiro() {
         this.matriz = new char[TAMANHO][TAMANHO];
@@ -67,7 +68,52 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
-    private boolean podeComer(int r, int c){
+    public ArrayList<Jogada> retornaJogadasPossiveis(Tabuleiro tabuleiro, char vez){
+
+        if(verificarAlgumaPecaPodeComer()){
+            for(Peca peca:pecas){
+                switch (peca.getTipo()) {
+                    case '1':
+                        
+                        break;
+                    case '2':
+                        
+                        break;
+                    case '3':
+                        
+                        break;
+                    case '4':
+                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else{
+            for(Peca peca:pecas){
+                switch (peca.getTipo()) {
+                    case '1':
+                        
+                        break;
+                    case '2':
+                        
+                        break;
+                    case '3':
+                        
+                        break;
+                    case '4':
+                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return jogadasPossiveis;
+    }
+
+    public boolean podeComer(int r, int c){
         if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
             return false;
         }
@@ -237,7 +283,7 @@ public class Tabuleiro implements Cloneable {
         return false;              
     }
 
-    private boolean verificarAlgumaPecaPodeComer(){
+    public boolean verificarAlgumaPecaPodeComer(){
         for(Peca peca: pecas){
             if(this.turno == 1){
                 if(peca.getTipo() == '1'){
@@ -257,7 +303,7 @@ public class Tabuleiro implements Cloneable {
         return false;
     }
     
-    private boolean verificarCasaOrigemVálida(int r, int c){
+    public boolean verificarCasaOrigemVálida(int r, int c){
         if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
             return false;
         }
@@ -269,7 +315,7 @@ public class Tabuleiro implements Cloneable {
         }
     }
 
-    private boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2){
+    public boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2){
         if (this.matriz[r2][c2] != '0') {
             return false;
         }
@@ -391,7 +437,7 @@ public class Tabuleiro implements Cloneable {
         return false;
     }
 
-    private boolean verificarCasaDestinoVálidaDama(int r1, int c1, int r2, int c2){
+    public boolean verificarCasaDestinoVálidaDama(int r1, int c1, int r2, int c2){
         if (this.matriz[r2][c2] != '0') {
             return false;
         }

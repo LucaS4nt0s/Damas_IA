@@ -74,6 +74,30 @@ public final class MainInterfaceGrafica extends JFrame {
                 add(tabuleiroInterface[i][j]);
             }
         }
+
+        /*
+            CRIAÇÃO DA ÁRVORE
+        
+            - PARA O ESTADO DO TABULEIRO, VERIFICAR JOGADAS POSSÍVEIS;
+            - PARA CADA JOGADA POSSÍVEL, CRIA UM NOVO NÓ;
+            - ADICIONAMOS OS NÓS NA ÁRVORE;
+            - ENTRAMOS RECURSIVAMENTE NOS NÓS FILHOS;
+        */
+        // Node arvore = new Node();
+        
+        // this.montarArvoreIA (arvore, profundidade, '1');
+        
+        // ArrayList<Jogada> jogadasPossiveis = retornaJogadasPossiveis(tabuleiroLogico, '1');
+        // for (Jogada jogada : jogadasPossiveis) {
+        //     Node no = new Node();
+        //     no.setOrigin(jogada.getOrigem());
+        //     no.setDest(jogada.getDestino());
+        //     no.setMatrix(tabuleiroLogico.clone());
+        //     no.setMovimento();
+        //     no.setTurn(true);
+        //     arvore.addChild(no);
+        //     //this.montarArvoreIA (no, profundidade++, '2');
+        // }   
     }
 
     private void tratarClique(int linha, int col) {
