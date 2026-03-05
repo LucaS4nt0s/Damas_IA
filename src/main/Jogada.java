@@ -10,11 +10,11 @@ public class Jogada {
     }
 
     public char getOrigem(){
-        return origem;
+        return this.origem;
     }
 
     public char getDestino(){
-        return destino;
+        return this.destino;
     }
 
     public void setOrigem(int linhaOrigem, int colunaOrigem){
@@ -22,7 +22,7 @@ public class Jogada {
     }
 
     public void setOrigem(char origem){
-        int pos[] = {0,0};
+        int pos[];
 
         pos = Codificadora.decodificar(origem);
 
@@ -34,7 +34,7 @@ public class Jogada {
     }
 
     public void setDestino(char destino){
-        int pos[] = {0,0};
+        int pos[];
 
         pos = Codificadora.decodificar(destino);
 

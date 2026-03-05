@@ -2,12 +2,12 @@ package main;
 
 public class Codificadora {
     private final static char[][] mapaTabuleiro = {
-        {'0', 'A', '0', 'B', '0', 'C'},
-        {'D', '0', 'E', '0', 'F', '0'},
-        {'0', 'G', '0', 'H', '0', 'I'},
-        {'J', '0', 'K', '0', 'L', '0'},
-        {'0', 'M', '0', 'N', '0', 'O'},
-        {'P', '0', 'Q', '0', 'R', '0'},
+        {'X', 'A', 'X', 'B', 'X', 'C'},
+        {'D', 'X', 'E', 'X', 'F', 'X'},
+        {'X', 'G', 'X', 'H', 'X', 'I'},
+        {'J', 'X', 'K', 'X', 'L', 'X'},
+        {'X', 'M', 'X', 'N', 'X', 'O'},
+        {'P', 'X', 'Q', 'X', 'R', 'X'},
     };
 
     public static int[] decodificar(char posicao){

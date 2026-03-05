@@ -11,6 +11,7 @@ public final class MainInterfaceGrafica extends JFrame {
 
     private final int TAMANHO = 6;
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
+    private final int profundidade = 10; // profundidade da árvore (Começa com 10, falta implementar escolha de dificuldade)
     
     /*
         Casa Inválida: -1
@@ -83,21 +84,25 @@ public final class MainInterfaceGrafica extends JFrame {
             - ADICIONAMOS OS NÓS NA ÁRVORE;
             - ENTRAMOS RECURSIVAMENTE NOS NÓS FILHOS;
         */
-        // Node arvore = new Node();
+        Node arvore = new Node();
         
-        // this.montarArvoreIA (arvore, profundidade, '1');
+        this.montarArvoreIA (arvore, profundidade, '1');
         
-        // ArrayList<Jogada> jogadasPossiveis = retornaJogadasPossiveis(tabuleiroLogico, '1');
+        // ArrayList<Jogada> jogadasPossiveis = tabuleiroLogico.retornaJogadasPossiveis(tabuleiroLogico.getMatriz(), '1');
         // for (Jogada jogada : jogadasPossiveis) {
         //     Node no = new Node();
         //     no.setOrigin(jogada.getOrigem());
         //     no.setDest(jogada.getDestino());
-        //     no.setMatrix(tabuleiroLogico.clone());
-        //     no.setMovimento();
+        //     // no.setMatrix(tabuleiroLogico.clone());
+        //     // no.setMovimento();
         //     no.setTurn(true);
         //     arvore.addChild(no);
-        //     //this.montarArvoreIA (no, profundidade++, '2');
+        //     //this.montarArvoreIA (no, profundidade++, '2');                                                        
         // }   
+    }
+
+    private void montarArvoreIA(Node no, int profundidade, char vez){
+        
     }
 
     private void tratarClique(int linha, int col) {
@@ -108,7 +113,6 @@ public final class MainInterfaceGrafica extends JFrame {
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
             if (tabuleiroLogico.getMatriz()[linha][col] != '0' && tabuleiroLogico.getMatriz()[linha][col] != 'X') {
                 if (tabuleiroLogico.getTurno() == 1 && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3')) {
-                    
                     linhaOrigem = linha;
                     colOrigem = col;
                     tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -154,28 +158,6 @@ public final class MainInterfaceGrafica extends JFrame {
         linhaOrigem = -1;
         colOrigem = -1;
     }
-
-    // private boolean moverPecaLogica(int r1, int c1, int r2, int c2) {
-        
-    //     // A casa de destino deve estar vazia
-    //     if (tabuleiroLogico.getMatriz()[r2][c2] == 0) {
-            
-    //         // Transfere o valor (seja 1, 2, 3 ou 4) para a nova posição
-    //         tabuleiroLogico.getMatriz()[r2][c2] = tabuleiroLogico.getMatriz()[r1][c1];
-    //         tabuleiroLogico.getMatriz()[r1][c1] = 0;
-
-    //         // Promoção simples para Dama (opcional)
-    //         if (tabuleiroLogico.getMatriz()[r2][c2] == 2 && r2 == 5) {
-    //             tabuleiroLogico.getMatriz()[r2][c2] = 4;
-    //         }
-    //         if (tabuleiroLogico.getMatriz()[r2][c2] == 1 && r2 == 0) {
-    //             tabuleiroLogico.getMatriz()[r2][c2] = 3;
-    //         }
-
-    //         return true;
-    //     }
-    //     return false;
-    // }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainInterfaceGrafica::new);

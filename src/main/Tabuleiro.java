@@ -68,50 +68,50 @@ public class Tabuleiro implements Cloneable {
         Implementação dos métodos - getMovimentosPossiveis(), fazerMovimento(), etc
     */
 
-    public ArrayList<Jogada> retornaJogadasPossiveis(Tabuleiro tabuleiro, char vez){
+    // public ArrayList<Jogada> retornaJogadasPossiveis(char[][] tabuleiro, char vez){
 
-        if(verificarAlgumaPecaPodeComer()){
-            for(Peca peca:pecas){
-                switch (peca.getTipo()) {
-                    case '1':
+    //     if(verificarAlgumaPecaPodeComer()){
+    //         for(Peca peca:pecas){
+    //             switch (peca.getTipo()) {
+    //                 case '1':
                         
-                        break;
-                    case '2':
+    //                     break;
+    //                 case '2':
                         
-                        break;
-                    case '3':
+    //                     break;
+    //                 case '3':
                         
-                        break;
-                    case '4':
+    //                     break;
+    //                 case '4':
                         
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else{
-            for(Peca peca:pecas){
-                switch (peca.getTipo()) {
-                    case '1':
+    //                     break;
+    //                 default:
+    //                     break;
+    //             }
+    //         }
+    //     } else{
+    //         for(Peca peca:pecas){
+    //             switch (peca.getTipo()) {
+    //                 case '1':
                         
-                        break;
-                    case '2':
+    //                     break;
+    //                 case '2':
                         
-                        break;
-                    case '3':
+    //                     break;
+    //                 case '3':
                         
-                        break;
-                    case '4':
+    //                     break;
+    //                 case '4':
                         
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+    //                     break;
+    //                 default:
+    //                     break;
+    //             }
+    //         }
+    //     }
 
-        return jogadasPossiveis;
-    }
+    //     return jogadasPossiveis;
+    // }
 
     public boolean podeComer(int r, int c){
         if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
@@ -124,6 +124,25 @@ public class Tabuleiro implements Cloneable {
         System.out.println(this.matriz[r][c]);
         switch (this.matriz[r][c]) {
             case '1':
+                System.out.println("comeu: "+ comeu);
+                if(comeu && r < 4){
+                    if(c < 4){
+                        if(this.matriz[r+1][c+1] == '2' || this.matriz[r+1][c+1] == '4'){
+                            if(this.matriz[r+2][c+2] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                    
+                    if(c > 1){
+                        if(this.matriz[r+1][c-1] == '2' || this.matriz[r+1][c-1] == '4'){
+                            if(this.matriz[r+2][c-2] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                }
+
                 if(r < 2){
                     return false;
                 }
@@ -146,6 +165,24 @@ public class Tabuleiro implements Cloneable {
                 
                 break;
             case '2':
+                if(comeu && r > 1){
+                    if(c < 4){
+                        if(this.matriz[r-1][c+1] == '1' || this.matriz[r-1][c+1] == '3'){
+                            if(this.matriz[r-2][c+2] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                    
+                    if(c > 1){
+                        if(this.matriz[r-1][c-1] == '1' || this.matriz[r-1][c-1] == '3'){
+                            if(this.matriz[r-2][c-2] == '0'){
+                                return true;
+                            }
+                        }
+                    }
+                }
+
                 if(r > 3){
                     return false;
                 }
@@ -322,6 +359,38 @@ public class Tabuleiro implements Cloneable {
 
         switch (this.matriz[r1][c1]) {
             case '1': // brancas
+                if(comeu && r1 < 4){
+                    if(c1 < 4){
+                        if(r2 == r1 + 2 && c2 == c1 + 2){
+                            if(this.matriz[r1+1][c1+1] == '2' || this.matriz[r1+1][c1+1] == '4'){
+                                if(this.matriz[r1+2][c1+2] == '0'){
+                                    this.matriz[r1][c1] = '0';
+                                    this.matriz[r1+1][c1+1] = '0';
+                                    this.matriz[r2][c2] = '1';
+                                    this.comeu = true;
+                                    this.obrigadoComer = this.podeComer(r2, c2);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if(c1 > 1){
+                        if(r2 == r1 + 2 && c2 == c1 - 2){
+                            if(this.matriz[r1+1][c1-1] == '2' || this.matriz[r1+1][c1-1] == '4'){
+                                if(this.matriz[r1+2][c1-2] == '0'){
+                                    this.matriz[r1][c1] = '0';
+                                    this.matriz[r1+1][c1-1] = '0';
+                                    this.matriz[r2][c2] = '1';
+                                    this.comeu = true;
+                                    this.obrigadoComer = this.podeComer(r2, c2);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (r2 < r1){ // Brancas só podem mover para cima
                     if (this.matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
                         if(r2 == r1 - 1 && (c2 == c1 - 1 || c2 == c1 + 1)) { 
@@ -365,7 +434,8 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 pecas.removeIf(p -> p.getLinha() == tempR && p.getColuna() == tempC);
                                 pecasPretas--;
-                                this.comeu = podeComer(r2, c2);
+                                this.comeu = true;
+                                this.obrigadoComer = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
@@ -377,6 +447,38 @@ public class Tabuleiro implements Cloneable {
                 } 
                 break;
             case '2': 
+                if(comeu && r1 > 1){
+                    if(c1 < 4){
+                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
+                            if(this.matriz[r1-1][c1+1] == '1' || this.matriz[r1-1][c1+1] == '3'){
+                                if(this.matriz[r1-2][c1+2] == '0'){
+                                    this.matriz[r1][c1] = '0';
+                                    this.matriz[r1-1][c1+1] = '0';
+                                    this.matriz[r2][c2] = '2';
+                                    this.comeu = true;
+                                    this.obrigadoComer = this.podeComer(r2, c2);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if(c1 > 1){
+                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
+                            if(this.matriz[r1-1][c1-1] == '1' || this.matriz[r1-1][c1-1] == '3'){
+                                if(this.matriz[r1-2][c1-2] == '0'){
+                                    this.matriz[r1][c1] = '0';
+                                    this.matriz[r1-1][c1-1] = '0';
+                                    this.matriz[r2][c2] = '2';
+                                    this.comeu = true;
+                                    this.obrigadoComer = this.podeComer(r2, c2);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (r2 > r1){ 
                     if (this.matriz[r2][c2] == '0') { 
                         if(r2 == r1 + 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
@@ -420,7 +522,8 @@ public class Tabuleiro implements Cloneable {
                                 }
                                 pecas.removeIf(p -> p.getLinha() == tempR && p.getColuna() == tempC);
                                 pecasBrancas--;
-                                this.comeu = podeComer(r2, c2);
+                                this.comeu = true;
+                                this.obrigadoComer = podeComer(r2, c2);
                                 return true;
                             } else {
                                 return false;
@@ -531,7 +634,8 @@ public class Tabuleiro implements Cloneable {
                         final int finalLinha = linhaParada;
                         final int finalColuna = colunaParada;
                         pecas.removeIf(p -> p.getLinha() == finalLinha && p.getColuna() == finalColuna);
-                        this.comeu = podeComer(proxLinha, proxColuna);
+                        this.comeu = true;
+                        this.obrigadoComer = podeComer(proxLinha, proxColuna);
                         pecasPretas--;
 
                         return true;
@@ -621,7 +725,8 @@ public class Tabuleiro implements Cloneable {
                         final int finalLinha = linhaParada;
                         final int finalColuna = colunaParada;
                         pecas.removeIf(p -> p.getLinha() == finalLinha && p.getColuna() == finalColuna);
-                        this.comeu = podeComer(proxLinha, proxColuna);
+                        this.comeu = true;
+                        this.obrigadoComer = podeComer(proxLinha, proxColuna);
                         pecasBrancas--;
 
                         return true;
@@ -668,7 +773,7 @@ public class Tabuleiro implements Cloneable {
         }
         
         System.out.println(podeMover);
-        if (podeMover && this.comeu == false){
+        if (podeMover && this.obrigadoComer == false){
             if (this.turno == 1){
                 this.turno = 2;
             } else {
