@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.*;
-import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -182,11 +181,13 @@ public final class MainInterfaceGrafica extends JFrame {
         }
         System.out.println("--------------------------------------------------");
         
-        ArrayList<Peca> pecas = tabuleiroLogico.getPecas();
-        
-        for(Peca peca: pecas){
-            System.out.println(peca.toString());
-        }
+        boolean turno = true;
+
+        if(tabuleiroLogico.getTurno() == 2){
+            turno = false;
+        } 
+
+        System.out.println(tabuleiroLogico.retornaJogadasPossiveis(tabuleiroLogico.getMatriz(), turno).toString());
     }
 
     private class CasaBotao extends JButton {

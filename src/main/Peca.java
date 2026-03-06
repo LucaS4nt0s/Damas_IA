@@ -1,21 +1,16 @@
 package main;
 
 public class Peca {
-    private final int id;
     private char tipo;
     private int linha;
     private int coluna;
 
-    public Peca(int id, char tipo, int linha, int coluna){
-        this.id = id;
+    public Peca(char tipo, int linha, int coluna){
         this.tipo = tipo;
         this.linha = linha;
         this.coluna = coluna;
     }
 
-    public int getID(){
-        return this.id;
-    }
 
     public char getTipo(){
         return this.tipo;
@@ -48,8 +43,7 @@ public class Peca {
     @Override
     public String toString() {
         return "Peca{" +
-                "id=" + id +
-                ", tipo=" + tipo +
+                "tipo=" + tipo +
                 ", linha=" + linha +
                 ", coluna=" + coluna +
                 '}';

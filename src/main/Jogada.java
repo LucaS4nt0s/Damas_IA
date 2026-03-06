@@ -5,7 +5,7 @@ public class Jogada {
     private char destino;
     
     public Jogada(int linhaOrigem, int colunaOrigem, int linhaDestino, int colunaDestino){
-        this.origem = Codificadora.codificar(linhaOrigem, linhaDestino);
+        this.origem = Codificadora.codificar(linhaOrigem, colunaOrigem);
         this.destino = Codificadora.codificar(linhaDestino, colunaDestino);
     }
 
@@ -39,5 +39,13 @@ public class Jogada {
         pos = Codificadora.decodificar(destino);
 
         this.destino = Codificadora.codificar(pos[0], pos[1]);
+    }
+
+    @Override
+    public String toString(){
+        return "Jogada{" +
+                "origem=" + origem +
+                ", destino=" + destino +
+                "}";
     }
 }

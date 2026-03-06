@@ -25,6 +25,9 @@ public class Codificadora {
     }
 
     public static char codificar(int linha, int coluna){
+        if (linha < 0 || linha >= 6 || coluna < 0 || coluna >= 6) {
+            throw new IllegalArgumentException("Coordenada invalida: (" + linha + "," + coluna + ")");
+        }
         return mapaTabuleiro[linha][coluna];
     }
 }
