@@ -131,7 +131,7 @@ public final class MainInterfaceGrafica extends JFrame {
                 return;
             }
 
-            boolean sucesso = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col);
+            boolean sucesso = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col, vez);
 
             if (sucesso) {
                 cancelarSelecao();

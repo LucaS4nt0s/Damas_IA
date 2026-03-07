@@ -41,7 +41,7 @@ public class Tabuleiro implements Cloneable {
     }
 
     @Override
-    public Tabuleiro clone() {
+    public Tabuleiro clone(){
         try {
             Tabuleiro clone = (Tabuleiro) super.clone();
             clone.matriz = new char[TAMANHO][];
@@ -319,6 +319,7 @@ public class Tabuleiro implements Cloneable {
                             return true;
                         }
                     }
+
                     if(r2 > r1){
                         while(r2 > tempR){
                             tempR++;
@@ -350,7 +351,29 @@ public class Tabuleiro implements Cloneable {
                     }
 
                     if(contPeca == 1){
-                        return true;
+                        if(r2 > r1 && c2 > c1){
+                            if(matriz[r2 - 1][c2 - 1] == '2' || matriz[r2 - 1][c2 - 1] == '4'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 > r1 && c2 < c1){
+                            if(matriz[r2 - 1][c2 + 1] == '2' || matriz[r2 - 1][c2 + 1] == '4'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 < r1 && c2 > c1){
+                            if(matriz[r2 + 1][c2 - 1] == '2' || matriz[r2 + 1][c2 - 1] == '4'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 < r1 && c2 < c1){
+                            if(matriz[r2 + 1][c2 + 1] == '2' || matriz[r2 + 1][c2 + 1] == '4'){
+                                return true;
+                            }
+                        }
                     } else if (contPeca == 0){
                         if(!obrigadoComer){
                             return true;
@@ -396,7 +419,29 @@ public class Tabuleiro implements Cloneable {
                     }
 
                     if(contPeca == 1){
-                        return true;
+                        if(r2 > r1 && c2 > c1){
+                            if(matriz[r2 - 1][c2 - 1] == '1' || matriz[r2 - 1][c2 - 1] == '3'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 > r1 && c2 < c1){
+                            if(matriz[r2 - 1][c2 + 1] == '1' || matriz[r2 - 1][c2 + 1] == '3'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 < r1 && c2 > c1){
+                            if(matriz[r2 + 1][c2 - 1] == '1' || matriz[r2 + 1][c2 - 1] == '3'){
+                                return true;
+                            }
+                        }
+
+                        if(r2 < r1 && c2 < c1){
+                            if(matriz[r2 + 1][c2 + 1] == '1' || matriz[r2 + 1][c2 + 1] == '3'){
+                                return true;
+                            }
+                        }
                     } else if (contPeca == 0){
                         if(!obrigadoComer){
                             return true;
