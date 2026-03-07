@@ -51,7 +51,7 @@ public final class MainInterfaceGrafica extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         inicializarComponentes();
-        sincronizarInterface(); 
+        sincronizarInterface(tabuleiroLogico.getMatriz()); 
 
         setVisible(true);
     }
@@ -111,11 +111,11 @@ public final class MainInterfaceGrafica extends JFrame {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
             if (tabuleiroLogico.getMatriz()[linha][col] != '0' && tabuleiroLogico.getMatriz()[linha][col] != 'X') {
-                if (tabuleiroLogico.getTurno() == 1 && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3')) {
+                if (tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3')) {
                     linhaOrigem = linha;
                     colOrigem = col;
                     tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
-                } else if (tabuleiroLogico.getTurno() == 2 && (tabuleiroLogico.getMatriz()[linha][col] == '2' || tabuleiroLogico.getMatriz()[linha][col] == '4')) {
+                } else if (!tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '2' || tabuleiroLogico.getMatriz()[linha][col] == '4')) {
                     linhaOrigem = linha;
                     colOrigem = col;
                     tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -131,21 +131,11 @@ public final class MainInterfaceGrafica extends JFrame {
                 return;
             }
 
-            boolean sucesso = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col, vez);
+            char[][] tabuleiroAtualizado = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col, tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
 
-            if (sucesso) {
-                cancelarSelecao();
-                sincronizarInterface();
-    
-                /*
-                    VERIFICAÇÃO DE QUEM É A VEZ DE JOGAR E IMPLEMENTAÇÃO DA JOGADA DA IA
-                */
-                
-                
-            } else {
-                // Se o movimento for inválido (ex: clicar em cima de outra peça)
-                cancelarSelecao();
-            }
+            cancelarSelecao();
+            sincronizarInterface(tabuleiroAtualizado);
+            
         }
     }
 
@@ -166,24 +156,17 @@ public final class MainInterfaceGrafica extends JFrame {
     * Atualiza a interface gráfica com base na matriz lógica do Tabuleiro. Este
     * método será chamado após cada jogada da IA.
     */
-   public void sincronizarInterface() {
+   public void sincronizarInterface(char[][] matriz) {
        for (int i = 0; i < TAMANHO; i++) {
            for (int j = 0; j < TAMANHO; j++) {
-               char peca = tabuleiroLogico.getMatriz()[i][j];
+               char peca = matriz[i][j];
                tabuleiroInterface[i][j].setTipoPeca(peca);
             }
         }
-        for(int i = 0; i < TAMANHO; i++) {
-            for(int j = 0; j < TAMANHO; j++) {
-                System.out.print(tabuleiroLogico.getMatriz()[i][j] + " |");
-            }
-            System.out.println(); // Nova linha após imprimir toda a matriz
-        }
-        System.out.println("--------------------------------------------------");
         
         boolean turno = true;
 
-        if(tabuleiroLogico.getTurno() == 2){
+        if(tabuleiroLogico.getTurno()){
             turno = false;
         } 
 

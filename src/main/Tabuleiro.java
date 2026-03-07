@@ -9,7 +9,7 @@ public class Tabuleiro implements Cloneable {
 
     private char[][] matriz;
     private final int TAMANHO = 6;
-    private int turno = 0; // 1 para brancas, 2 para pretas
+    private boolean turno = true; // TRUE para brancas, FALSE para pretas
     private boolean comeuBrancas = false;
     private boolean comeuPretas = false;
     private boolean obrigadoComer = false;
@@ -37,7 +37,7 @@ public class Tabuleiro implements Cloneable {
                 }
             }
         }
-        setTurno(1); // Começa com as brancas
+        setTurno(true); // Começa com as brancas
     }
 
     @Override
@@ -671,7 +671,7 @@ public class Tabuleiro implements Cloneable {
     }
 
     public boolean verificarAlgumaPecaPodeComer(boolean vez, char[][] matriz){
-        ArrayList<Peca> pecas = verificarOndeTemPeca(this.matriz);
+        ArrayList<Peca> pecas = verificarOndeTemPeca(matriz);
         for(Peca peca: pecas){
             if(vez == true){
                 if(peca.getTipo() == '1' || peca.getTipo() == '3'){
@@ -692,7 +692,7 @@ public class Tabuleiro implements Cloneable {
     }
     
     public boolean verificarCasaOrigemVálida(int r, int c, boolean vez, char[][] matriz){
-        if(this.matriz[r][c] == 'X' || this.matriz[r][c] == '0'){
+        if(matriz[r][c] == 'X' || matriz[r][c] == '0'){
             return false;
         }
         
@@ -707,362 +707,116 @@ public class Tabuleiro implements Cloneable {
         return r >= 0 && r < TAMANHO && c >= 0 && c < TAMANHO;
     }
 
-    public boolean verificarCasaDestinoVálidaComum(int r1, int c1, int r2, int c2, boolean vez, char[][] matriz){
-        if (!dentroLimites(r1, c1) || !dentroLimites(r2, c2)) {
-            return false;
-        }
 
-        if (matriz[r2][c2] != '0') {
-            return false;
-        }
-
-
-        switch (matriz[r1][c1]) {
-            case '1': // brancas
-                if(comeuBrancas && r1 < 4){
-                    if(c1 < 4){
-                        if(r2 == r1 + 2 && c2 == c1 + 2){
-                            if(matriz[r1+1][c1+1] == '2' || matriz[r1+1][c1+1] == '4'){
-                                if(matriz[r1+2][c1+2] == '0'){
-                                    matriz[r1][c1] = '0';
-                                    matriz[r1+1][c1+1] = '0';
-                                    matriz[r2][c2] = '1';
-                                    this.comeuBrancas = true;
-                                    this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    
-                    if(c1 > 1){
-                        if(r2 == r1 + 2 && c2 == c1 - 2){
-                            if(matriz[r1+1][c1-1] == '2' || matriz[r1+1][c1-1] == '4'){
-                                if(matriz[r1+2][c1-2] == '0'){
-                                    matriz[r1][c1] = '0';
-                                    matriz[r1+1][c1-1] = '0';
-                                    matriz[r2][c2] = '1';
-                                    this.comeuBrancas = true;
-                                    this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (r2 < r1){ // Brancas só podem mover para cima
-                    if (matriz[r2][c2] == '0') { // A casa de destino deve estar vazia
-                        if(r2 == r1 - 1 && (c2 == c1 - 1 || c2 == c1 + 1)) { 
-                            if(obrigadoComer){
-                                return false;
-                            } 
-                            matriz[r2][c2] = matriz[r1][c1];
-                            if (matriz[r2][c2] == '1' && r2 == 0) {
-                                matriz[r2][c2] = '3';
-                            }
-                            this.comeuBrancas = false;
-                            matriz[r1][c1] = '0';
-                            return true;
-                        } else if (r2 == r1 - 2 && (c2 == c1 - 2 || c2 == c1 + 2)) { // Verifica se há uma peça adversária para capturar
-                            int tempR = r1 - 1;
-                            int tempC = (c2 == c1 - 2) ? c1 - 1 : c1 + 1;
-                            if (matriz[tempR][tempC] == '2' || matriz[tempR][tempC] == '4') { // Verifica se a peça adversária está na casa intermediária
-                                matriz[r2][c2] = matriz[r1][c1];
-                                if (matriz[r2][c2] == '1' && r2 == 0) {
-                                    matriz[r2][c2] = '3';
-                                }
-                                matriz[r1][c1] = '0';
-                                matriz[tempR][tempC] = '0';
-                                pecasPretas--;
-                                this.comeuBrancas = true;
-                                this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        } else {
-                            return false; 
-                        }
-                    }
-                } 
-                break;
-            case '2': 
-                if(comeuPretas && r1 > 1){
-                    if(c1 < 4){
-                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
-                            if(matriz[r1-1][c1+1] == '1' || matriz[r1-1][c1+1] == '3'){
-                                if(matriz[r1-2][c1+2] == '0'){
-                                    matriz[r1][c1] = '0';
-                                    matriz[r1-1][c1+1] = '0';
-                                    matriz[r2][c2] = '2';
-                                    this.comeuPretas = true;
-                                    this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    
-                    if(c1 > 1){
-                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
-                            if(matriz[r1-1][c1-1] == '1' || matriz[r1-1][c1-1] == '3'){
-                                if(matriz[r1-2][c1-2] == '0'){
-                                    matriz[r1][c1] = '0';
-                                    matriz[r1-1][c1-1] = '0';
-                                    matriz[r2][c2] = '2';
-                                    this.comeuPretas = true;
-                                    this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (r2 > r1){ 
-                    if (matriz[r2][c2] == '0') { 
-                        if(r2 == r1 + 1 && (c2 == c1 - 1 || c2 == c1 + 1)) {  
-                            if(obrigadoComer){
-                                return false;
-                            }
-                            matriz[r2][c2] = matriz[r1][c1];
-                            if (matriz[r2][c2] == '2' && r2 == 5) {
-                                matriz[r2][c2] = '4';
-                            }
-                            matriz[r1][c1] = '0';
-                            this.comeuPretas = false;
-                            return true;
-                        } else if (r2 == r1 + 2 && (c2 == c1 - 2 || c2 == c1 + 2)) {
-                            int tempR = r1 + 1;
-                            int tempC = (c2 == c1 - 2) ? c1 - 1 : c1 + 1;
-                            if (matriz[tempR][tempC] == '1' || matriz[tempR][tempC] == '3') { 
-                                matriz[r2][c2] = matriz[r1][c1];
-                                if (matriz[r2][c2] == '2' && r2 == 5) {
-                                    matriz[r2][c2] = '4';
-                                }
-                                matriz[r1][c1] = '0';
-                                matriz[tempR][tempC] = '0';
-                                pecasBrancas--;
-                                this.comeuPretas = true;
-                                this.obrigadoComer = podeComer(r2, c2, vez, matriz);
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        } else {
-                            return false; 
-                        }
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-        return false;
-    }
-
-    public boolean verificarCasaDestinoVálidaDama(int r1, int c1, int r2, int c2, boolean vez, char[][] matriz){
-        if (!dentroLimites(r1, c1) || !dentroLimites(r2, c2)) {
-            return false;
-        }
-
-        if (matriz[r2][c2] != '0') {
-            return false;
-        }
-
-        if (c1 == c2 || r1 == r2){ // previne movimento horizontal ou vertical
-            return false;
-        }
-
-        int contPeca = 0;
-        int linhaParada = -1;
-        int colunaParada = -1;
-        int proxLinha = r2;
-        int proxColuna = c2;
-        int tempR = r1;
-        int tempC = c1;
-
-        switch (matriz[r1][c1]){
-            case '3':
-                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && matriz[r2][c2] == '0'){ // é diagonal 
-                    if (Math.abs(r2 - r1) == 1){
-                        if(obrigadoComer){
-                            return false;
-                        }
-                        matriz[r1][c1] = '0';
-                        matriz[r2][c2] = '3';
-                        this.comeuBrancas = false;
-                        return true;
-                    }
-                    if(r2 > r1){
-                        while(r2 > tempR){
-                            tempR++;
-                            if (c2 > c1){
-                                tempC++;
-                            } else{
-                                tempC--;
-                            }
-                            if(matriz[tempR][tempC] == '2' || matriz[tempR][tempC] == '4'){
-                                contPeca++;
-                                linhaParada = tempR;
-                                colunaParada = tempC;
-                                proxLinha = tempR + 1;
-                                if (c2 > c1){
-                                    proxColuna = tempC + 1;
-                                } else{
-                                    proxColuna = tempC - 1;
-                                }
-                            } else if (matriz[tempR][tempC] == '1' || matriz[tempR][tempC] == '3') {
-                                return false;
-                            }
-                        }
-                    } else if(r2 < r1){
-                        while(r2 < tempR){
-                            tempR--;
-                            if (c2 > c1){
-                                tempC++;
-                            } else{
-                                tempC--;
-                            }
-                            if(matriz[tempR][tempC] == '2' || matriz[tempR][tempC] == '4'){
-                                contPeca++;
-                                linhaParada = tempR;
-                                colunaParada = tempC;
-                                proxLinha = tempR - 1;
-                                if (c2 > c1){
-                                    proxColuna = tempC + 1;
-                                } else{
-                                    proxColuna = tempC - 1;
-                                }
-                            } else if (matriz[tempR][tempC] == '1' || matriz[tempR][tempC] == '3') {
-                                return false;
-                            }
-                        }
-                    }
-
-                    if(contPeca == 1){
-                        matriz[r1][c1] = '0';
-                        matriz[proxLinha][proxColuna] = '3';
-                        matriz[linhaParada][colunaParada] = '0';
-                        this.comeuBrancas = true;
-                        this.obrigadoComer = podeComer(proxLinha, proxColuna, vez, matriz);
-                        pecasPretas--;
-
-                        return true;
-                    } else if (contPeca == 0){
-                        if(obrigadoComer){
-                            return false;
-                        }
-                        matriz[r1][c1] = '0';
-                        matriz[r2][c2] = '3';
-                        this.comeuBrancas = false;
-                        return true;
-                    }
-                }
-            break;
-            case '4':
-                if((Math.abs(r2 - r1) == Math.abs(c2 - c1)) && matriz[r2][c2] == '0'){ // é diagonal 
-                    if (Math.abs(r2 - r1) == 1){
-                        if(obrigadoComer){
-                            return false;
-                        }
-                        matriz[r1][c1] = '0';
-                        matriz[r2][c2] = '4';
-                        return true;
-                    }
-                    if(r2 > r1){
-                        while(r2 > tempR){
-                            tempR++;
-                            if (c2 > c1){
-                                tempC++;
-                            } else{
-                                tempC--;
-                            }
-                            if(matriz[tempR][tempC] == '1' || matriz[tempR][tempC] == '3'){
-                                contPeca++;
-                                linhaParada = tempR;
-                                colunaParada = tempC;
-                                proxLinha = tempR + 1;
-                                if (c2 > c1){
-                                    proxColuna = tempC + 1;
-                                } else{
-                                    proxColuna = tempC - 1;
-                                }
-                            } else if (matriz[tempR][tempC] == '2' || matriz[tempR][tempC] == '4') {
-                                return false;
-                            }
-                        }
-                    } else if(r2 < r1){
-                        while(r2 < tempR){
-                            tempR--;
-                            if (c2 > c1){
-                                tempC++;
-                            } else{
-                                tempC--;
-                            }
-                            if(matriz[tempR][tempC] == '1' || matriz[tempR][tempC] == '3'){
-                                contPeca++;
-                                linhaParada = tempR;
-                                colunaParada = tempC;
-                                proxLinha = tempR - 1;
-                                if (c2 > c1){
-                                    proxColuna = tempC + 1;
-                                } else{
-                                    proxColuna = tempC - 1;
-                                }
-                            } else if (matriz[tempR][tempC] == '2' || matriz[tempR][tempC] == '4') {
-                                return false;
-                            }
-                        }
-                    }
-
-                    if(contPeca == 1){
-                        matriz[r1][c1] = '0';
-                        matriz[proxLinha][proxColuna] = '4';
-                        matriz[linhaParada][colunaParada] = '0';
-                        this.comeuPretas = true;
-                        this.obrigadoComer = podeComer(proxLinha, proxColuna, vez, matriz);
-                        pecasBrancas--;
-
-                        return true;
-                    } else if (contPeca == 0){
-                        if(obrigadoComer){
-                            return false;
-                        }
-                        matriz[r1][c1] = '0';
-                        matriz[r2][c2] = '4';
-                        this.comeuPretas = false;
-                        return true;
-                    }
-                }
-            break;
-            default:
-            break;
-        }
-        return false;
-    }
-
-    public boolean fazerMovimento(int r1, int c1, int r2, int c2, boolean vez, char[][] matriz) {
+    public char[][] fazerMovimento(int r1, int c1, int r2, int c2, boolean vez, char[][] matriz) {
         
         obrigadoComer = verificarAlgumaPecaPodeComer(vez, matriz);
+        boolean comeu = false;
        
         if (!verificarCasaOrigemVálida(r1, c1, vez, matriz)) {
-            return false; // A casa de origem é inválida ou vazia
+            return matriz; // A casa de origem é inválida ou vazia
         }
 
         if ((c1 == c2) || (r1 == r2)){
-            return false; // Impede movimentos verticais ou horizontais
+            return matriz; // Impede movimentos verticais ou horizontais
         }
 
-        boolean podeMover; // verifica se é um movimento válido
-        if (matriz[r1][c1] == '1' || matriz[r1][c1] == '2'){
-            podeMover = verificarCasaDestinoVálidaComum(r1, c1, r2, c2, vez, matriz);
-        } else{
-            podeMover = verificarCasaDestinoVálidaDama(r1, c1, r2, c2, vez, matriz);
-        }
+        boolean podeMover = false; // verifica se é um movimento válido
         
-        System.out.println(podeMover);
+        ArrayList<Jogada> jogadas = retornaJogadasPossiveis(matriz, vez);
+        
+        for (Jogada jogada : jogadas){
+            if(jogada.getOrigem() == Codificadora.codificar(r1, c1) && jogada.getDestino() == Codificadora.codificar(r2, c2)){
+                podeMover = true;
+            }
+        }
+
+        if(podeMover){
+            if(Math.abs(r1 - r2) == 1 && Math.abs(c1 - c2) == 1){
+                matriz[r2][c2] = matriz[r1][c1];
+                matriz[r1][c1] = '0';
+            } else{
+                if(r2 > r1 && c2 > c1){
+                    if(r2 <= 5 && c2 <= 5 && (matriz[r2 - 1][c2 - 1] != '0' && matriz[r2 - 1][c2 - 1] != 'X')){
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r2-1][c2-1] = '0';
+                        matriz[r1][c1] = '0';
+                        comeu = true;
+                    } else{
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r1][c1] = '0';
+                    }
+                }
+    
+                if(r2 > r1 && c2 < c1){
+                    if(r2 <= 5 && c2 >= 0 && (matriz[r2 - 1][c2 + 1] != '0' && matriz[r2 - 1][c2 + 1] != 'X')){
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r2-1][c2+1] = '0';
+                        matriz[r1][c1] = '0';
+                        comeu = true;
+                    } else{
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r1][c1] = '0';
+                    }
+                }
+    
+                if(r2 < r1 && c2 > c1){
+                    if(r2 >= 0 && c2 <= 5 && (matriz[r2 + 1][c2 - 1] != '0' && matriz[r2 + 1][c2 - 1] != 'X')){
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r2+1][c2-1] = '0';
+                        matriz[r1][c1] = '0';
+                        comeu = true;
+                    } else{
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r1][c1] = '0';
+                    }
+                }
+    
+                if(r2 < r1 && c2 < c1){
+                    if(r2 >= 0 && c2 >= 0 && (matriz[r2 + 1][c2 + 1] != '0' && matriz[r2 + 1][c2 + 1] != 'X')){
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r2+1][c2+1] = '0';
+                        matriz[r1][c1] = '0';
+                        comeu = true;
+                    } else{
+                        matriz[r2][c2] = matriz[r1][c1];
+                        matriz[r1][c1] = '0';
+                    }
+                }
+            }
+
+            switch(matriz[r2][c2]){
+                case '1':
+                    if(r2 == 0){
+                        matriz[r2][c2] = '3';
+                    }
+                    break;
+                case '2':
+                    if(r2 == 5){
+                        matriz[r2][c2] = '4';
+                    }
+                    break;
+            }
+
+            if((matriz[r2][c2] == '1' || matriz[r2][c2] == '3') && comeu){
+                this.pecasPretas--;
+            } if((matriz[r2][c2] == '2' || matriz[r2][c2] == '4') && comeu){
+                this.pecasBrancas--;
+            }
+
+            if(!podeComer(r2, c2, vez, matriz)){
+                vez = !vez;
+            }
+        }
+        System.out.println("Tabuleiro pós movimento: ");
+        for(int i = 0; i < TAMANHO; i++) {
+            for(int j = 0; j < TAMANHO; j++) {
+                System.out.print(matriz[i][j] + " |");
+            }
+            System.out.println(); // Nova linha após imprimir toda a matriz
+        }
+
+        this.turno = vez;
 
         obrigadoComer = false;
 
@@ -1071,7 +825,8 @@ public class Tabuleiro implements Cloneable {
             inicializar();
         }
 
-        return podeMover;
+
+        return matriz;
     }
 
     public boolean verificaMovimento () {
@@ -1086,11 +841,11 @@ public class Tabuleiro implements Cloneable {
         this.matriz = matriz;
     }
 
-    public int getTurno() {
+    public boolean getTurno() {
         return turno;
     }
 
-    public void setTurno(int turno) {
+    public void setTurno(boolean turno) {
         this.turno = turno;
     }
 
