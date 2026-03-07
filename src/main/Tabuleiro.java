@@ -7,16 +7,15 @@ import java.util.ArrayList;
  */
 public class Tabuleiro implements Cloneable {
 
-    private char[][] matriz;
+    private char[][] matriz; // matriz tipo char para economizar bytes nos nós
     private final int TAMANHO = 6;
     private boolean turno = true; // TRUE para brancas, FALSE para pretas
     private boolean comeuBrancas = false;
     private boolean comeuPretas = false;
-    private boolean obrigadoComer = false;
     private int pecasPretas = 6;
     private int pecasBrancas = 6;
 
-    public Tabuleiro() {
+    public Tabuleiro() { // construtor
         this.matriz = new char[TAMANHO][TAMANHO];
         inicializar();
     }
@@ -76,7 +75,7 @@ public class Tabuleiro implements Cloneable {
         return pecas;
     }
 
-    public ArrayList<Jogada> retornaJogadasPossiveis(char[][] matriz, boolean vez){
+    public ArrayList<Jogada> retornaJogadasPossiveis(char[][] matriz, boolean vez, boolean obrigadoComer){
         ArrayList<Jogada> jogadasPossiveis = new ArrayList<>();
         ArrayList<Peca> pecas = verificarOndeTemPeca(matriz);
 
@@ -94,7 +93,7 @@ public class Tabuleiro implements Cloneable {
                             for(int i = 2; i >= -2; i -= 4){
                                 for(int j = 2; j >= -2; j -= 4){
                                     if((peca.getLinha() + i) >= 0 && (peca.getLinha() + i) <= 5 && (peca.getColuna() + j) >= 0 && (peca.getColuna() + j) <= 5){
-                                        if(validaMovimentoComumSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j, matriz)){
+                                        if(validaMovimentoComumSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j, matriz, obrigadoComer)){
                                             Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j);
                                             jogadasPossiveis.add(novaJogada);
                                         }
@@ -104,14 +103,14 @@ public class Tabuleiro implements Cloneable {
                             break;
                         case '3', '4':
                             for(int i = 2; peca.getLinha() + i < 6 && peca.getColuna() + i < 6; i++){
-                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i, matriz)){
+                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i, matriz, obrigadoComer)){
                                     Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i);
                                     jogadasPossiveis.add(novaJogada);
                                 }
                             }
 
                             for(int i = 2; peca.getLinha() + i < 6 && peca.getColuna() - i >= 0; i++){
-                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i, matriz)){
+                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i, matriz, obrigadoComer)){
                                     Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i);
                                     jogadasPossiveis.add(novaJogada);
                                     
@@ -119,14 +118,14 @@ public class Tabuleiro implements Cloneable {
                             }
 
                             for(int i = 2; peca.getLinha() - i >= 0 && peca.getColuna() + i < 6; i++){
-                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i, matriz)){
+                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i, matriz, obrigadoComer)){
                                     Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i);
                                     jogadasPossiveis.add(novaJogada);
                                 }
                             }
 
                             for(int i = 2; peca.getLinha() - i >= 0 && peca.getColuna() - i >= 0; i++){
-                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i, matriz)){
+                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i, matriz, obrigadoComer)){
                                     Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i);
                                     jogadasPossiveis.add(novaJogada);
                                 }
@@ -150,7 +149,7 @@ public class Tabuleiro implements Cloneable {
                         for(int i = 1; i >= -1; i -= 2){
                                 for(int j = 1; j >= -1; j -= 2){
                                     if((peca.getLinha() + i) >= 0 && (peca.getLinha() + i) <= 5 && (peca.getColuna() + j) >= 0 && (peca.getColuna() + j) <= 5){
-                                        if(validaMovimentoComumSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j, matriz)){
+                                        if(validaMovimentoComumSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j, matriz, obrigadoComer)){
                                             Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + j);
                                             jogadasPossiveis.add(novaJogada);
                                         }
@@ -160,28 +159,28 @@ public class Tabuleiro implements Cloneable {
                         break;
                     case '3', '4':
                         for(int i = 1; peca.getLinha() + i < 6 && peca.getColuna() + i < 6; i++){
-                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i, matriz)){
+                                if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i, matriz, obrigadoComer)){
                                     Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() + i);
                                     jogadasPossiveis.add(novaJogada);
                                 }
                         }
 
                         for(int i = 1; peca.getLinha() + i < 6 && peca.getColuna() - i >= 0; i++){
-                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i, matriz)){
+                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i, matriz, obrigadoComer)){
                                 Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() + i, peca.getColuna() - i);
                                 jogadasPossiveis.add(novaJogada);
                             }
                         }
 
                         for(int i = 1; peca.getLinha() - i >= 0 && peca.getColuna() + i < 6; i++){
-                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i, matriz)){
+                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i, matriz, obrigadoComer)){
                                 Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() + i);
                                 jogadasPossiveis.add(novaJogada);
                             }
                         }
 
                         for(int i = 1; peca.getLinha() - i >= 0 && peca.getColuna() - i >= 0; i++){
-                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i, matriz)){
+                            if(validaMovimentoDamaSemAlterarTabuleiro(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i, matriz, obrigadoComer)){
                                 Jogada novaJogada = new Jogada(peca.getLinha(), peca.getColuna(), peca.getLinha() - i, peca.getColuna() - i);
                                 jogadasPossiveis.add(novaJogada);
                             }
@@ -196,7 +195,7 @@ public class Tabuleiro implements Cloneable {
         return jogadasPossiveis;
     }
 
-    public boolean validaMovimentoComumSemAlterarTabuleiro(int r1, int c1, int r2, int c2, char[][] matriz){
+    public boolean validaMovimentoComumSemAlterarTabuleiro(int r1, int c1, int r2, int c2, char[][] matriz, boolean obrigadoComer){
         if (!dentroLimites(r1, c1) || !dentroLimites(r2, c2)) {
             return false;
         }
@@ -208,23 +207,17 @@ public class Tabuleiro implements Cloneable {
         switch (matriz[r1][c1]) {
             case '1': // brancas
                 if(comeuBrancas && r1 < 4){
-                    if(c1 < 4){
-                        if(r2 == r1 + 2 && c2 == c1 + 2){
-                            if(matriz[r1+1][c1+1] == '2' || matriz[r1+1][c1+1] == '4'){
-                                if(matriz[r1+2][c1+2] == '0'){
-                                    return true;
-                                }
-                            }
+                    if (c1 < 4 && r2 == r1 + 2 && c2 == c1 + 2) { 
+                        if ((matriz[r1+1][c1+1] == '2' || matriz[r1+1][c1+1] == '4')
+                            && matriz[r1+2][c1+2] == '0') {
+                            return true;
                         }
                     }
-                    
-                    if(c1 > 1){
-                        if(r2 == r1 + 2 && c2 == c1 - 2){
-                            if(matriz[r1+1][c1-1] == '2' || matriz[r1+1][c1-1] == '4'){
-                                if(matriz[r1+2][c1-2] == '0'){
-                                    return true;
-                                }
-                            }
+
+                    if (c1 > 1 && r2 == r1 + 2 && c2 == c1 - 2) { 
+                        if ((matriz[r1+1][c1-1] == '2' || matriz[r1+1][c1-1] == '4')
+                            && matriz[r1+2][c1-2] == '0') {
+                            return true;
                         }
                     }
                 }
@@ -248,24 +241,18 @@ public class Tabuleiro implements Cloneable {
                 } 
                 break;
             case '2': 
-                if(comeuPretas && r1 > 1){
-                    if(c1 < 4){
-                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
-                            if(matriz[r1-1][c1+1] == '1' || matriz[r1-1][c1+1] == '3'){
-                                if(matriz[r1-2][c1+2] == '0'){
-                                    return true;
-                                }
-                            }
+                if (comeuPretas && r1 > 1) {
+                    if (c1 < 4 && r2 == r1 - 2 && c2 == c1 + 2) { 
+                        if ((matriz[r1-1][c1+1] == '1' || matriz[r1-1][c1+1] == '3')
+                            && matriz[r1-2][c1+2] == '0') {
+                            return true;
                         }
                     }
-                    
-                    if(c1 > 1){
-                        if(r2 == r1 - 2 && (c2 == c1 + 2 || c2 == c1 - 2)){
-                            if(matriz[r1-1][c1-1] == '1' || matriz[r1-1][c1-1] == '3'){
-                                if(matriz[r1-2][c1-2] == '0'){
-                                    return true;
-                                }
-                            }
+
+                    if (c1 > 1 && r2 == r1 - 2 && c2 == c1 - 2) { 
+                        if ((matriz[r1-1][c1-1] == '1' || matriz[r1-1][c1-1] == '3')
+                            && matriz[r1-2][c1-2] == '0') {
+                            return true;
                         }
                     }
                 }
@@ -294,7 +281,7 @@ public class Tabuleiro implements Cloneable {
         return false;
     }
 
-    public boolean validaMovimentoDamaSemAlterarTabuleiro(int r1, int c1, int r2, int c2, char[][] matriz){
+    public boolean validaMovimentoDamaSemAlterarTabuleiro(int r1, int c1, int r2, int c2, char[][] matriz, boolean obrigadoComer){
         if (!dentroLimites(r1, c1) || !dentroLimites(r2, c2)) {
             return false;
         }
@@ -691,7 +678,7 @@ public class Tabuleiro implements Cloneable {
         return false;
     }
     
-    public boolean verificarCasaOrigemVálida(int r, int c, boolean vez, char[][] matriz){
+    public boolean verificarCasaOrigemVálida(int r, int c, boolean vez, char[][] matriz, boolean obrigadoComer){
         if(matriz[r][c] == 'X' || matriz[r][c] == '0'){
             return false;
         }
@@ -707,25 +694,35 @@ public class Tabuleiro implements Cloneable {
         return r >= 0 && r < TAMANHO && c >= 0 && c < TAMANHO;
     }
 
+    private char[][] copiarMatriz(char[][] origem) {
+        char[][] copia = new char[TAMANHO][TAMANHO];
+        for (int i = 0; i < TAMANHO; i++) {
+            copia[i] = origem[i].clone();
+        }
+        return copia;
+    }
+
 
     public char[][] fazerMovimento(int r1, int c1, int r2, int c2, boolean vez, char[][] matriz) {
-        
-        obrigadoComer = verificarAlgumaPecaPodeComer(vez, matriz);
+        char[][] matrizClone = copiarMatriz(matriz); 
+
+        boolean obrigadoComer = verificarAlgumaPecaPodeComer(vez, matrizClone); // verifica se é obrigado a comer
         boolean comeu = false;
        
-        if (!verificarCasaOrigemVálida(r1, c1, vez, matriz)) {
-            return matriz; // A casa de origem é inválida ou vazia
+        if (!verificarCasaOrigemVálida(r1, c1, vez, matrizClone, obrigadoComer)) {
+            return matrizClone; // A casa de origem é inválida ou vazia
         }
 
         if ((c1 == c2) || (r1 == r2)){
-            return matriz; // Impede movimentos verticais ou horizontais
+            return matrizClone; // Impede movimentos verticais ou horizontais
         }
 
         boolean podeMover = false; // verifica se é um movimento válido
         
-        ArrayList<Jogada> jogadas = retornaJogadasPossiveis(matriz, vez);
+        ArrayList<Jogada> jogadas = retornaJogadasPossiveis(matrizClone, vez, obrigadoComer);
         
         for (Jogada jogada : jogadas){
+            System.out.println(jogada.toString());
             if(jogada.getOrigem() == Codificadora.codificar(r1, c1) && jogada.getDestino() == Codificadora.codificar(r2, c2)){
                 podeMover = true;
             }
@@ -733,100 +730,126 @@ public class Tabuleiro implements Cloneable {
 
         if(podeMover){
             if(Math.abs(r1 - r2) == 1 && Math.abs(c1 - c2) == 1){
-                matriz[r2][c2] = matriz[r1][c1];
-                matriz[r1][c1] = '0';
+                matrizClone[r2][c2] = matrizClone[r1][c1];
+                matrizClone[r1][c1] = '0';
             } else{
                 if(r2 > r1 && c2 > c1){
-                    if(r2 <= 5 && c2 <= 5 && (matriz[r2 - 1][c2 - 1] != '0' && matriz[r2 - 1][c2 - 1] != 'X')){
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r2-1][c2-1] = '0';
-                        matriz[r1][c1] = '0';
+                    if(r2 <= 5 && c2 <= 5 && (matrizClone[r2 - 1][c2 - 1] != '0' && matrizClone[r2 - 1][c2 - 1] != 'X')){
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r2-1][c2-1] = '0';
+                        matrizClone[r1][c1] = '0';
+                        if(matrizClone[r2][c2] == '1' || matrizClone[r2][c2] == '3'){
+                            comeuBrancas = true;
+                        } else if (matrizClone[r2][c2] == '2' || matrizClone[r2][c2] == '4'){
+                            comeuPretas = true;
+                        }
                         comeu = true;
                     } else{
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r1][c1] = '0';
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r1][c1] = '0';
                     }
                 }
     
                 if(r2 > r1 && c2 < c1){
-                    if(r2 <= 5 && c2 >= 0 && (matriz[r2 - 1][c2 + 1] != '0' && matriz[r2 - 1][c2 + 1] != 'X')){
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r2-1][c2+1] = '0';
-                        matriz[r1][c1] = '0';
+                    if(r2 <= 5 && c2 >= 0 && (matrizClone[r2 - 1][c2 + 1] != '0' && matrizClone[r2 - 1][c2 + 1] != 'X')){
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r2-1][c2+1] = '0';
+                        matrizClone[r1][c1] = '0';
+                        if(matrizClone[r2][c2] == '1' || matrizClone[r2][c2] == '3'){
+                            comeuBrancas = true;
+                        } else if (matrizClone[r2][c2] == '2' || matrizClone[r2][c2] == '4'){
+                            comeuPretas = true;
+                        }
                         comeu = true;
                     } else{
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r1][c1] = '0';
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r1][c1] = '0';
                     }
                 }
     
                 if(r2 < r1 && c2 > c1){
-                    if(r2 >= 0 && c2 <= 5 && (matriz[r2 + 1][c2 - 1] != '0' && matriz[r2 + 1][c2 - 1] != 'X')){
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r2+1][c2-1] = '0';
-                        matriz[r1][c1] = '0';
+                    if(r2 >= 0 && c2 <= 5 && (matrizClone[r2 + 1][c2 - 1] != '0' && matrizClone[r2 + 1][c2 - 1] != 'X')){
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r2+1][c2-1] = '0';
+                        matrizClone[r1][c1] = '0';
+                        if(matrizClone[r2][c2] == '1' || matrizClone[r2][c2] == '3'){
+                            comeuBrancas = true;
+                        } else if (matrizClone[r2][c2] == '2' || matrizClone[r2][c2] == '4'){
+                            comeuPretas = true;
+                        }
                         comeu = true;
                     } else{
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r1][c1] = '0';
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r1][c1] = '0';
                     }
                 }
     
                 if(r2 < r1 && c2 < c1){
-                    if(r2 >= 0 && c2 >= 0 && (matriz[r2 + 1][c2 + 1] != '0' && matriz[r2 + 1][c2 + 1] != 'X')){
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r2+1][c2+1] = '0';
-                        matriz[r1][c1] = '0';
+                    if(r2 >= 0 && c2 >= 0 && (matrizClone[r2 + 1][c2 + 1] != '0' && matrizClone[r2 + 1][c2 + 1] != 'X')){
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r2+1][c2+1] = '0';
+                        matrizClone[r1][c1] = '0';
+                        if(matrizClone[r2][c2] == '1' || matrizClone[r2][c2] == '3'){
+                            comeuBrancas = true;
+                        } else if (matrizClone[r2][c2] == '2' || matrizClone[r2][c2] == '4'){
+                            comeuPretas = true;
+                        }
                         comeu = true;
                     } else{
-                        matriz[r2][c2] = matriz[r1][c1];
-                        matriz[r1][c1] = '0';
+                        matrizClone[r2][c2] = matrizClone[r1][c1];
+                        matrizClone[r1][c1] = '0';
                     }
                 }
             }
 
-            switch(matriz[r2][c2]){
+            switch(matrizClone[r2][c2]){
                 case '1':
                     if(r2 == 0){
-                        matriz[r2][c2] = '3';
+                        matrizClone[r2][c2] = '3';
                     }
                     break;
                 case '2':
                     if(r2 == 5){
-                        matriz[r2][c2] = '4';
+                        matrizClone[r2][c2] = '4';
                     }
                     break;
             }
 
-            if((matriz[r2][c2] == '1' || matriz[r2][c2] == '3') && comeu){
-                this.pecasPretas--;
-            } if((matriz[r2][c2] == '2' || matriz[r2][c2] == '4') && comeu){
-                this.pecasBrancas--;
+            if (comeu) {
+                if (matrizClone[r2][c2] == '1' || matrizClone[r2][c2] == '3') {
+                    this.pecasPretas--;
+                    comeuBrancas = true;
+                } else if (matrizClone[r2][c2] == '2' || matrizClone[r2][c2] == '4') {
+                    this.pecasBrancas--;
+                    comeuPretas = true;
+                }
             }
 
-            if(!podeComer(r2, c2, vez, matriz)){
+            boolean continuaCaptura = comeu && podeComer(r2, c2, vez, matrizClone);
+            if (!continuaCaptura) {
                 vez = !vez;
+                comeuBrancas = false;
+                comeuPretas = false;
             }
+
         }
         System.out.println("Tabuleiro pós movimento: ");
         for(int i = 0; i < TAMANHO; i++) {
             for(int j = 0; j < TAMANHO; j++) {
-                System.out.print(matriz[i][j] + " |");
+                System.out.print(matrizClone[i][j] + " |");
             }
-            System.out.println(); // Nova linha após imprimir toda a matriz
+            System.out.println(); // Nova linha após imprimir toda a matrizClone
         }
 
+        this.matriz = matrizClone;
         this.turno = vez;
-
-        obrigadoComer = false;
 
         if(pecasBrancas == 0 || pecasPretas == 0){
             System.out.println("Fim de jogo");
             inicializar();
         }
 
-
-        return matriz;
+        return matrizClone;
     }
 
     public boolean verificaMovimento () {
@@ -847,9 +870,5 @@ public class Tabuleiro implements Cloneable {
 
     public void setTurno(boolean turno) {
         this.turno = turno;
-    }
-
-    public boolean getObrigadoComer(){
-        return this.obrigadoComer;
     }
 }

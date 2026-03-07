@@ -57,7 +57,11 @@ public class Node {
     }
 
     public void setMatrix(char[][] matrix) {
-        this.matrix = matrix;
+        for(int i = 0; i < 6; i++){
+            for(int j = 0; j < 6; j++){
+                this.matrix[i][j] = matrix[i][j];
+            }
+        }
     }
     
 }

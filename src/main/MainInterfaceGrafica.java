@@ -135,7 +135,6 @@ public final class MainInterfaceGrafica extends JFrame {
 
             cancelarSelecao();
             sincronizarInterface(tabuleiroAtualizado);
-            
         }
     }
 
@@ -163,14 +162,6 @@ public final class MainInterfaceGrafica extends JFrame {
                tabuleiroInterface[i][j].setTipoPeca(peca);
             }
         }
-        
-        boolean turno = true;
-
-        if(tabuleiroLogico.getTurno()){
-            turno = false;
-        } 
-
-        System.out.println(tabuleiroLogico.retornaJogadasPossiveis(tabuleiroLogico.getMatriz(), turno).toString());
     }
 
     private class CasaBotao extends JButton {
