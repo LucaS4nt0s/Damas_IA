@@ -37,6 +37,10 @@ public class Tabuleiro implements Cloneable {
             }
         }
         setTurno(true); // Começa com as brancas
+        this.comeuBrancas = false;
+        this.comeuPretas = false;
+        pecasPretas = 6;
+        pecasBrancas = 6;
     }
 
     @Override
@@ -87,7 +91,7 @@ public class Tabuleiro implements Cloneable {
                 if((peca.getTipo() == '2' || peca.getTipo() == '4') && vez == true){
                     continue;
                 }
-                if(podeComer(peca.getLinha(), peca.getColuna(), vez, matriz)){
+                if(podeComer(peca.getLinha(), peca.getColuna(), matriz)){
                     switch (peca.getTipo()) {
                         case '1', '2':
                             for(int i = 2; i >= -2; i -= 4){
@@ -442,26 +446,14 @@ public class Tabuleiro implements Cloneable {
         return false;
     }
 
-    public boolean podeComer(int r, int c, boolean vez, char[][] matriz){
+    public boolean podeComer(int r, int c, char[][] matriz){
         if(matriz[r][c] == 'X' || matriz[r][c] == '0'){
             return false;
         }
 
-        if((matriz[r][c] == '1' || matriz[r][c] == '3') && vez == false){
-            return false;
-        }
-
-        if((matriz[r][c] == '2' || matriz[r][c] == '4') && vez == true){
-            return false;
-        }
-
         int casaOcupada;
-
-        System.out.println("r: " + r + " c: " + c);
-        System.out.println(matriz[r][c]);
         switch (matriz[r][c]) {
             case '1':
-                System.out.println("comeu: "+ comeuBrancas);
                 if(comeuBrancas && r < 4){
                     if(c < 4){
                         if(matriz[r+1][c+1] == '2' || matriz[r+1][c+1] == '4'){
@@ -662,13 +654,13 @@ public class Tabuleiro implements Cloneable {
         for(Peca peca: pecas){
             if(vez == true){
                 if(peca.getTipo() == '1' || peca.getTipo() == '3'){
-                    if(podeComer(peca.getLinha(), peca.getColuna(), vez, matriz)){
+                    if(podeComer(peca.getLinha(), peca.getColuna(), matriz)){
                         return true;
                     }
                 }
             } else if (vez == false){
                 if(peca.getTipo() == '2' || peca.getTipo() == '4'){
-                    if(podeComer(peca.getLinha(), peca.getColuna(), vez, matriz)){
+                    if(podeComer(peca.getLinha(), peca.getColuna(), matriz)){
                         return true;
                     }
                 }
@@ -684,7 +676,7 @@ public class Tabuleiro implements Cloneable {
         }
         
         if(obrigadoComer){
-            return podeComer(r, c, vez, matriz);
+            return podeComer(r, c, matriz);
         } else {
             return true;
         }
@@ -694,7 +686,7 @@ public class Tabuleiro implements Cloneable {
         return r >= 0 && r < TAMANHO && c >= 0 && c < TAMANHO;
     }
 
-    private char[][] copiarMatriz(char[][] origem) {
+    public char[][] copiarMatriz(char[][] origem) {
         char[][] copia = new char[TAMANHO][TAMANHO];
         for (int i = 0; i < TAMANHO; i++) {
             copia[i] = origem[i].clone();
@@ -722,7 +714,6 @@ public class Tabuleiro implements Cloneable {
         ArrayList<Jogada> jogadas = retornaJogadasPossiveis(matrizClone, vez, obrigadoComer);
         
         for (Jogada jogada : jogadas){
-            System.out.println(jogada.toString());
             if(jogada.getOrigem() == Codificadora.codificar(r1, c1) && jogada.getDestino() == Codificadora.codificar(r2, c2)){
                 podeMover = true;
             }
@@ -825,7 +816,7 @@ public class Tabuleiro implements Cloneable {
                 }
             }
 
-            boolean continuaCaptura = comeu && podeComer(r2, c2, vez, matrizClone);
+            boolean continuaCaptura = comeu && podeComer(r2, c2, matrizClone);
             if (!continuaCaptura) {
                 vez = !vez;
                 comeuBrancas = false;
@@ -833,23 +824,188 @@ public class Tabuleiro implements Cloneable {
             }
 
         }
-        System.out.println("Tabuleiro pós movimento: ");
-        for(int i = 0; i < TAMANHO; i++) {
-            for(int j = 0; j < TAMANHO; j++) {
-                System.out.print(matrizClone[i][j] + " |");
-            }
-            System.out.println(); // Nova linha após imprimir toda a matrizClone
-        }
+        // System.out.println("Tabuleiro pós movimento: ");
+        // for(int i = 0; i < TAMANHO; i++) {
+        //     for(int j = 0; j < TAMANHO; j++) {
+        //         System.out.print(matrizClone[i][j] + " |");
+        //     }
+        //     System.out.println(); // Nova linha após imprimir toda a matrizClone
+        // }
 
         this.matriz = matrizClone;
         this.turno = vez;
 
-        if(pecasBrancas == 0 || pecasPretas == 0){
-            System.out.println("Fim de jogo");
-            inicializar();
-        }
+        // if(pecasBrancas == 0 || pecasPretas == 0){
+        //     System.out.println("Fim de jogo");
+        //     inicializar();
+        // }
 
         return matrizClone;
+    }
+
+    public boolean calcularVez(char[][] matrizAntes, char[][] matrizDepois, char origem, char destino){
+        int posOrigem[] = Codificadora.decodificar(origem);
+        int posDestino[] = Codificadora.decodificar(destino);
+
+        int linhaOrigem = posOrigem[0];
+        int colunaOrigem = posOrigem[1];
+        int linhaDestino = posDestino[0];
+        int colunaDestino = posDestino[1];
+
+        boolean comeu;
+
+        switch (matrizAntes[linhaOrigem][colunaOrigem]) {
+            case '1':
+                if(Math.abs((linhaOrigem - linhaDestino)) == 2 && Math.abs((colunaOrigem - colunaDestino)) == 2){
+                    comeu = true;
+                } else{
+                    return false; // vez das pretas (false)
+                }
+
+                if(comeu){
+                    return podeComer(linhaDestino, colunaDestino, matrizDepois); // vez das brancas ainda (true)
+                } else{
+                    return false; // vez das pretas (false)
+                }
+            case '2':
+                if(Math.abs((linhaOrigem - linhaDestino)) == 2 && Math.abs((colunaOrigem - colunaDestino)) == 2){
+                    comeu = true;
+                } else{
+                    return true; // vez das brancas (true)
+                }
+
+                if(comeu){
+                    return !podeComer(linhaDestino, colunaDestino, matrizDepois); // vez das pretas ainda (false)
+                } else{
+                    return true; // vez das brancas (true)
+                }
+            case '3':
+                int contadorPeca = 0;
+
+                if(linhaOrigem > linhaDestino && colunaOrigem > colunaDestino){
+                    int tempR = linhaOrigem - 1;
+                    int tempC = colunaOrigem - 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '2' || matrizAntes[tempR][tempC] == '4'){
+                            contadorPeca++;
+                        }
+                        tempR--;
+                        tempC--;
+                    }while(tempR > linhaDestino);
+
+                } else if(linhaOrigem > linhaDestino && colunaOrigem < colunaDestino){
+                    int tempR = linhaOrigem - 1;
+                    int tempC = colunaOrigem + 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '2' || matrizAntes[tempR][tempC] == '4'){
+                            contadorPeca++;
+                        }
+                        tempR--;
+                        tempC++;
+                    }while(tempR > linhaDestino);
+
+                } else if(linhaOrigem < linhaDestino && colunaOrigem > colunaDestino){
+                    int tempR = linhaOrigem + 1;
+                    int tempC = colunaOrigem - 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '2' || matrizAntes[tempR][tempC] == '4'){
+                            contadorPeca++;
+                        }
+                        tempR++;
+                        tempC--;
+                    }while(tempR < linhaDestino);
+
+                } else if(linhaOrigem < linhaDestino && colunaOrigem < colunaDestino){
+                    int tempR = linhaOrigem + 1;
+                    int tempC = colunaOrigem + 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '2' || matrizAntes[tempR][tempC] == '4'){
+                            contadorPeca++;
+                        }
+                        tempR++;
+                        tempC++;
+                    }while(tempR < linhaDestino);
+                }
+
+                if(contadorPeca == 1){
+                    comeu = true;
+                } else{
+                    return false; // vez das pretas (false)
+                }
+
+                if(comeu){
+                    return podeComer(linhaDestino, colunaDestino, matrizDepois); // vez das brancas ainda (true)
+                } else{
+                    return false; // vez das pretas (false)
+                }
+            case '4':
+                contadorPeca = 0;
+
+                if(linhaOrigem > linhaDestino && colunaOrigem > colunaDestino){
+                    int tempR = linhaOrigem - 1;
+                    int tempC = colunaOrigem - 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '1' || matrizAntes[tempR][tempC] == '3'){
+                            contadorPeca++;
+                        }
+                        tempR--;
+                        tempC--;
+                    }while(tempR > linhaDestino);
+
+                } else if(linhaOrigem > linhaDestino && colunaOrigem < colunaDestino){
+                    int tempR = linhaOrigem - 1;
+                    int tempC = colunaOrigem + 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '1' || matrizAntes[tempR][tempC] == '3'){
+                            contadorPeca++;
+                        }
+                        tempR--;
+                        tempC++;
+                    }while(tempR > linhaDestino);
+
+                } else if(linhaOrigem < linhaDestino && colunaOrigem > colunaDestino){
+                    int tempR = linhaOrigem + 1;
+                    int tempC = colunaOrigem - 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '1' || matrizAntes[tempR][tempC] == '3'){
+                            contadorPeca++;
+                        }
+                        tempR++;
+                        tempC--;
+                    }while(tempR < linhaDestino);
+                } else if(linhaOrigem < linhaDestino && colunaOrigem < colunaDestino){
+                    int tempR = linhaOrigem + 1;
+                    int tempC = colunaOrigem + 1;
+
+                    do{
+                        if(matrizAntes[tempR][tempC] == '1' || matrizAntes[tempR][tempC] == '3'){
+                            contadorPeca++;
+                        }
+                        tempR++;
+                        tempC++;
+                    }while(tempR < linhaDestino);
+                }
+
+                if(contadorPeca == 1){
+                    comeu = true;
+                } else{
+                    return true; // vez das brancas (true)
+                }
+
+                if(comeu){
+                    return !podeComer(linhaDestino, colunaDestino, matrizDepois); // vez das brancas ainda (true)
+                } else{
+                    return true; // vez das brancas (true)
+                }
+        }
+        return false;
     }
 
     public boolean verificaMovimento () {

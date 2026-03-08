@@ -22,6 +22,19 @@ public class Node {
     
     public Node () {
         this.children = new ArrayList<>();
+        this.minMax = Integer.MIN_VALUE;
+    }
+
+    public int getMinMax() {
+        return minMax;
+    }
+
+    public void setMinMax(int minMax) {
+        this.minMax = minMax;
+    }
+    
+    public ArrayList<Node> getChild (){
+        return this.children;
     }
     
     public void addChild (Node child){
@@ -57,11 +70,11 @@ public class Node {
     }
 
     public void setMatrix(char[][] matrix) {
-        for(int i = 0; i < 6; i++){
-            for(int j = 0; j < 6; j++){
-                this.matrix[i][j] = matrix[i][j];
-            }
-        }
+        this.matrix = matrix;
+    }
+    
+    public void setMovimento(char[][] matriz){
+        this.matrix = matriz;
     }
     
 }

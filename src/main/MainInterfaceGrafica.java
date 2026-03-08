@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -10,7 +11,7 @@ public final class MainInterfaceGrafica extends JFrame {
 
     private final int TAMANHO = 6;
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
-    private final int profundidade = 10; // profundidade da árvore (Começa com 10, falta implementar escolha de dificuldade)
+    private final int profundidade = 3; // profundidade da árvore (Começa com 10, falta implementar escolha de dificuldade)
     
     /*
         Casa Inválida: -1
@@ -36,6 +37,7 @@ public final class MainInterfaceGrafica extends JFrame {
             O JOGADOR TRAVADO PERDE O JOGO
     */
     private final Tabuleiro tabuleiroLogico; 
+    private final Tabuleiro tabuleiroIA = new Tabuleiro();
     private int linhaOrigem = -1, colOrigem = -1;
 
     public MainInterfaceGrafica() {
@@ -85,23 +87,76 @@ public final class MainInterfaceGrafica extends JFrame {
         */
         Node arvore = new Node();
         
-        this.montarArvoreIA (arvore, profundidade, '1');
-        
-        // ArrayList<Jogada> jogadasPossiveis = tabuleiroLogico.retornaJogadasPossiveis(tabuleiroLogico.getMatriz(), '1');
-        // for (Jogada jogada : jogadasPossiveis) {
-        //     Node no = new Node();
-        //     no.setOrigin(jogada.getOrigem());
-        //     no.setDest(jogada.getDestino());
-        //     // no.setMatrix(tabuleiroLogico.clone());
-        //     // no.setMovimento();
-        //     no.setTurn(true);
-        //     arvore.addChild(no);
-        //     //this.montarArvoreIA (no, profundidade++, '2');                                                        
-        // }   
+        this.montarArvoreIA (arvore, profundidade, true, tabuleiroIA.getMatriz());
+
+        mostrarArvore(arvore);
     }
 
-    private void montarArvoreIA(Node no, int profundidade, char vez){
-        
+    private void montarArvoreIA(Node no, int profundidade, boolean vez, char[][] matriz){
+        if(profundidade <= 0){
+            return;
+        }
+        ArrayList<Jogada> jogadasPossiveis = tabuleiroIA.retornaJogadasPossiveis(matriz, vez, false);
+        profundidade--;
+        for (Jogada jogada : jogadasPossiveis) {
+            Node novoNo = new Node();
+            novoNo.setOrigin(jogada.getOrigem());
+            novoNo.setDest(jogada.getDestino());
+            int posOrigem[] = Codificadora.decodificar(jogada.getOrigem());
+            int posDestino[] = Codificadora.decodificar(jogada.getDestino());
+            char[][]matrix = tabuleiroIA.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, matriz);
+            novoNo.setMatrix(matrix);
+            boolean proximaVez = tabuleiroIA.calcularVez(matriz, matrix, jogada.getOrigem(), jogada.getDestino());
+            novoNo.setTurn(proximaVez);
+            no.addChild(novoNo);
+            this.montarArvoreIA (novoNo, profundidade, proximaVez, matrix);                                                        
+        }   
+    }
+
+    private void mostrarArvore(Node arvore){
+        System.out.println("{ Origem :"+ arvore.getOrigin() + ", Destino:" + arvore.getDest() + " }");
+        ArrayList<Node> filhos = arvore.getChild();
+
+        if(filhos != null){
+            for(Node no:filhos){
+                mostrarArvore(no);
+            }
+        }
+    }
+
+    private void minMaxJogoDama(Node node) {
+
+        // if (node.getChild().isEmpty()) {
+
+        //     /*
+        //         RETURN MIN OU MAX
+        //      */
+        //     int minMax = aplicarHeuristicaVerificacaoGanhador(node);
+        //     node.setMinMax(minMax);
+            
+        // } else {
+
+        //     for (int i = 0; i < node.getChild().size(); i++) {
+        //         Node child = node.getChild().get(i);
+        //         if (child.getMinMax() == Integer.MIN_VALUE){
+        //             minMaxJogoDama (child);
+        //         }
+        //     }
+            
+        //     /*
+        //         jogada das brancas - branca é o usuário
+        //      */
+        //     if (node.isTurn()) {
+        //         int min = minimo(node.getChild());
+        //         node.setMinMax(min);
+        //     } /*
+        //     jogada das pretas - preta é a IA
+        //      */ else {
+        //         int max = maximo(node.getChild());
+        //         node.setMinMax(max);
+        //     }
+        // }
+
     }
 
     private void tratarClique(int linha, int col) {
