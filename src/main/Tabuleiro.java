@@ -835,10 +835,10 @@ public class Tabuleiro implements Cloneable {
         this.matriz = matrizClone;
         this.turno = vez;
 
-        // if(pecasBrancas == 0 || pecasPretas == 0){
-        //     System.out.println("Fim de jogo");
-        //     inicializar();
-        // }
+        if(pecasBrancas == 0 || pecasPretas == 0){
+            System.out.println("Fim de jogo");
+            inicializar();
+        }
 
         return matrizClone;
     }

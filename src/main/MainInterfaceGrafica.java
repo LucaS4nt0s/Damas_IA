@@ -96,7 +96,8 @@ public final class MainInterfaceGrafica extends JFrame {
         if(profundidade <= 0){
             return;
         }
-        ArrayList<Jogada> jogadasPossiveis = tabuleiroIA.retornaJogadasPossiveis(matriz, vez, false);
+        Tabuleiro tabuleiroCalculo = new Tabuleiro();
+        ArrayList<Jogada> jogadasPossiveis = tabuleiroCalculo.retornaJogadasPossiveis(matriz, vez, false);
         profundidade--;
         for (Jogada jogada : jogadasPossiveis) {
             Node novoNo = new Node();
@@ -104,9 +105,9 @@ public final class MainInterfaceGrafica extends JFrame {
             novoNo.setDest(jogada.getDestino());
             int posOrigem[] = Codificadora.decodificar(jogada.getOrigem());
             int posDestino[] = Codificadora.decodificar(jogada.getDestino());
-            char[][]matrix = tabuleiroIA.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, matriz);
+            char[][]matrix = tabuleiroCalculo.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, matriz);
             novoNo.setMatrix(matrix);
-            boolean proximaVez = tabuleiroIA.calcularVez(matriz, matrix, jogada.getOrigem(), jogada.getDestino());
+            boolean proximaVez = tabuleiroCalculo.calcularVez(matriz, matrix, jogada.getOrigem(), jogada.getDestino());
             novoNo.setTurn(proximaVez);
             no.addChild(novoNo);
             this.montarArvoreIA (novoNo, profundidade, proximaVez, matrix);                                                        
@@ -126,37 +127,87 @@ public final class MainInterfaceGrafica extends JFrame {
 
     private void minMaxJogoDama(Node node) {
 
-        // if (node.getChild().isEmpty()) {
+        if (node.getChild().isEmpty()) {
+            int minMax = verificarGanhadorHeuristica(node);
+            node.setMinMax(minMax);
+        } else {
+            for (int i = 0; i < node.getChild().size(); i++) {
+                Node child = node.getChild().get(i);
+                if (child.getMinMax() == Integer.MIN_VALUE){
+                    minMaxJogoDama (child);
+                }
+            }
+            /*
+                jogada das brancas - branca é o usuário
+             */
+            if (node.isTurn()) {
+                int min = minimo(node.getChild());
+                node.setMinMax(min);
+            } /*
+            jogada das pretas - preta é a IA
+             */ else {
+                int max = maximo(node.getChild());
+                node.setMinMax(max);
+            }
+        }
 
-        //     /*
-        //         RETURN MIN OU MAX
-        //      */
-        //     int minMax = aplicarHeuristicaVerificacaoGanhador(node);
-        //     node.setMinMax(minMax);
-            
-        // } else {
+    }
 
-        //     for (int i = 0; i < node.getChild().size(); i++) {
-        //         Node child = node.getChild().get(i);
-        //         if (child.getMinMax() == Integer.MIN_VALUE){
-        //             minMaxJogoDama (child);
-        //         }
-        //     }
-            
-        //     /*
-        //         jogada das brancas - branca é o usuário
-        //      */
-        //     if (node.isTurn()) {
-        //         int min = minimo(node.getChild());
-        //         node.setMinMax(min);
-        //     } /*
-        //     jogada das pretas - preta é a IA
-        //      */ else {
-        //         int max = maximo(node.getChild());
-        //         node.setMinMax(max);
-        //     }
-        // }
+    private int verificarGanhadorHeuristica(Node no){
+        char[][] matriz = no.getMatrix();
+        int pecasBrancas = 0, pecasPretas = 0;
 
+        for(int i = 0; i < TAMANHO; i++){
+            int inicioDoJ;
+            if(i % 2 == 0){
+                inicioDoJ = 1;
+            } else{
+                inicioDoJ = 0;
+            }
+
+            for(int j = inicioDoJ; j < TAMANHO; j+=2){
+                if(matriz[i][j] == '1' || matriz[i][j] == '3'){
+                    pecasBrancas++;
+                } else if(matriz[i][j] == '2' || matriz[i][j] == '4'){
+                    pecasPretas++;
+                }
+                
+            }
+        }
+
+        if(pecasBrancas > pecasPretas && no.isTurn()){
+            return 1;
+        } else if(pecasPretas > pecasBrancas && no.isTurn()){
+            return -1;
+        } else if(pecasPretas == pecasBrancas && no.isTurn()){
+            return 0;
+        } 
+
+        if(pecasBrancas > pecasPretas && !no.isTurn()){
+            return -1;
+        } else if(pecasPretas > pecasBrancas && !no.isTurn()){
+            return 1;
+        } else {
+            return 0;
+        } 
+    }
+
+    private int minimo(ArrayList<Node> nos){
+        int min = 0;
+        for(Node no: nos){
+            min += no.getMinMax();
+            minimo(no.getChild());
+        }
+        return min;
+    }
+
+    private int maximo(ArrayList<Node> nos){
+        int max = 0;
+        for(Node no: nos){
+            max += no.getMinMax();
+            maximo(no.getChild());
+        }
+        return max;
     }
 
     private void tratarClique(int linha, int col) {
