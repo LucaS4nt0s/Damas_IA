@@ -86,9 +86,10 @@ public final class MainInterfaceGrafica extends JFrame {
             - ENTRAMOS RECURSIVAMENTE NOS NÓS FILHOS;
         */
         Node arvore = new Node();
+        arvore.setTurn(true);
+        this.montarArvoreIA (arvore, profundidade, arvore.isTurn(), tabuleiroIA.getMatriz());
+        minMaxJogoDama(arvore);
         
-        this.montarArvoreIA (arvore, profundidade, true, tabuleiroIA.getMatriz());
-
         mostrarArvore(arvore);
     }
 
@@ -96,26 +97,32 @@ public final class MainInterfaceGrafica extends JFrame {
         if(profundidade <= 0){
             return;
         }
-        Tabuleiro tabuleiroCalculo = new Tabuleiro();
-        ArrayList<Jogada> jogadasPossiveis = tabuleiroCalculo.retornaJogadasPossiveis(matriz, vez, false);
-        profundidade--;
+        Tabuleiro tabuleiroGerador = new Tabuleiro();
+        ArrayList<Jogada> jogadasPossiveis = tabuleiroGerador.retornaJogadasPossiveis(matriz, vez, false);
+        int proxProfundidade = profundidade - 1;
         for (Jogada jogada : jogadasPossiveis) {
             Node novoNo = new Node();
             novoNo.setOrigin(jogada.getOrigem());
             novoNo.setDest(jogada.getDestino());
+
             int posOrigem[] = Codificadora.decodificar(jogada.getOrigem());
             int posDestino[] = Codificadora.decodificar(jogada.getDestino());
-            char[][]matrix = tabuleiroCalculo.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, matriz);
-            novoNo.setMatrix(matrix);
-            boolean proximaVez = tabuleiroCalculo.calcularVez(matriz, matrix, jogada.getOrigem(), jogada.getDestino());
+
+            Tabuleiro simulador = new Tabuleiro();
+            char[][] antes = simulador.copiarMatriz(matriz);
+            char[][] depois = simulador.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, antes);
+            
+            novoNo.setMatrix(simulador.copiarMatriz(depois));
+            boolean proximaVez = simulador.calcularVez(antes, depois, jogada.getOrigem(), jogada.getDestino());
             novoNo.setTurn(proximaVez);
+
             no.addChild(novoNo);
-            this.montarArvoreIA (novoNo, profundidade, proximaVez, matrix);                                                        
+            this.montarArvoreIA (novoNo, proxProfundidade, proximaVez, novoNo.getMatrix());                                                        
         }   
     }
 
     private void mostrarArvore(Node arvore){
-        System.out.println("{ Origem :"+ arvore.getOrigin() + ", Destino:" + arvore.getDest() + " }");
+        System.out.println("{ Origem :"+ arvore.getOrigin() + ", Destino:" + arvore.getDest() + ", MinMax: " + arvore.getMinMax() + " }");
         ArrayList<Node> filhos = arvore.getChild();
 
         if(filhos != null){
@@ -141,13 +148,11 @@ public final class MainInterfaceGrafica extends JFrame {
                 jogada das brancas - branca é o usuário
              */
             if (node.isTurn()) {
-                int min = minimo(node.getChild());
-                node.setMinMax(min);
+                node.setMinMax(minimo(node.getChild()));
             } /*
             jogada das pretas - preta é a IA
              */ else {
-                int max = maximo(node.getChild());
-                node.setMinMax(max);
+                node.setMinMax(maximo(node.getChild()));
             }
         }
 
@@ -175,37 +180,28 @@ public final class MainInterfaceGrafica extends JFrame {
             }
         }
 
-        if(pecasBrancas > pecasPretas && no.isTurn()){
+        // heuristica para pretas IA
+        if(pecasPretas - pecasBrancas > 0){
             return 1;
-        } else if(pecasPretas > pecasBrancas && no.isTurn()){
+        } else if (pecasPretas - pecasBrancas < 0){
             return -1;
-        } else if(pecasPretas == pecasBrancas && no.isTurn()){
-            return 0;
-        } 
-
-        if(pecasBrancas > pecasPretas && !no.isTurn()){
-            return -1;
-        } else if(pecasPretas > pecasBrancas && !no.isTurn()){
-            return 1;
         } else {
             return 0;
-        } 
+        }
     }
 
     private int minimo(ArrayList<Node> nos){
-        int min = 0;
+        int min = Integer.MAX_VALUE;
         for(Node no: nos){
-            min += no.getMinMax();
-            minimo(no.getChild());
+            min = Math.min(min, no.getMinMax());
         }
         return min;
     }
 
     private int maximo(ArrayList<Node> nos){
-        int max = 0;
+        int max = Integer.MIN_VALUE;
         for(Node no: nos){
-            max += no.getMinMax();
-            maximo(no.getChild());
+            max = Math.max(max, no.getMinMax());
         }
         return max;
     }
