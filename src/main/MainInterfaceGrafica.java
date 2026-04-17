@@ -11,7 +11,9 @@ public final class MainInterfaceGrafica extends JFrame {
 
     private final int TAMANHO = 6;
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
-    private final int profundidade = 3; // profundidade da árvore (Começa com 10, falta implementar escolha de dificuldade)
+    private int profundidade; // profundidade da árvore (Nível de dificuldade)
+    private boolean pecasJogador; // True - jogador joga de brancas, False - jogador joga de pretas
+    
     
     /*
         Casa Inválida: -1
@@ -46,6 +48,16 @@ public final class MainInterfaceGrafica extends JFrame {
             TABULEIRO DO JOGO
         */
         tabuleiroLogico = new Tabuleiro();
+
+        ConfigJogo config = mostrarConfigInicial();
+
+        if(config == null){
+            dispose();
+            return;
+        }
+
+        this.profundidade = config.profundidade;
+        this.pecasJogador = config.pecasJogador;
 
         setTitle("DISCIPLINA - IA - MINI JOGO DE DAMA");
         setSize(800, 800);
@@ -89,7 +101,7 @@ public final class MainInterfaceGrafica extends JFrame {
         arvore.setTurn(true);
         this.montarArvoreIA (arvore, profundidade, arvore.isTurn(), tabuleiroIA.getMatriz());
         minMaxJogoDama(arvore);
-        
+
         mostrarArvore(arvore);
     }
 
@@ -213,11 +225,11 @@ public final class MainInterfaceGrafica extends JFrame {
             
             // Verifica se a casa clicada contém QUALQUER peça (1, 2, 3 ou 4)
             if (tabuleiroLogico.getMatriz()[linha][col] != '0' && tabuleiroLogico.getMatriz()[linha][col] != 'X') {
-                if (tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3')) {
+                if (tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '1' || tabuleiroLogico.getMatriz()[linha][col] == '3') && this.pecasJogador) {
                     linhaOrigem = linha;
                     colOrigem = col;
                     tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
-                } else if (!tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '2' || tabuleiroLogico.getMatriz()[linha][col] == '4')) {
+                } else if (!tabuleiroLogico.getTurno() && (tabuleiroLogico.getMatriz()[linha][col] == '2' || tabuleiroLogico.getMatriz()[linha][col] == '4') && !this.pecasJogador) {
                     linhaOrigem = linha;
                     colOrigem = col;
                     tabuleiroInterface[linha][col].setBackground(Color.YELLOW); // Destaque do clique
@@ -232,6 +244,7 @@ public final class MainInterfaceGrafica extends JFrame {
                 cancelarSelecao();
                 return;
             }
+            
 
             char[][] tabuleiroAtualizado = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col, tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
 
@@ -301,5 +314,45 @@ public final class MainInterfaceGrafica extends JFrame {
                 g2.drawOval(margem + 5, margem + 5, getWidth() - 2 * margem - 10, getHeight() - 2 * margem - 10);
             }
         }
+    }
+
+    private static class ConfigJogo{
+        final int profundidade;
+        final boolean pecasJogador; // true - jogador começa de brancas, false - jogador começa de pretas
+
+        ConfigJogo(int profundidade, boolean pecasJogador){
+            this.profundidade = profundidade;
+            this.pecasJogador = pecasJogador;
+        }
+    }
+
+    private ConfigJogo mostrarConfigInicial() {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 8, 8));
+
+        JSlider dificuldadeSlider = new JSlider(1, 9, 3);
+        dificuldadeSlider.setMajorTickSpacing(1);
+        dificuldadeSlider.setPaintTicks(true);
+        dificuldadeSlider.setPaintLabels(true);
+        dificuldadeSlider.setSnapToTicks(true);
+
+        JComboBox<String> pecaInicialBox = new JComboBox<>(new String[] {
+        "Brancas", "Pretas"
+        });
+
+        panel.add(new JLabel("Dificuldade (1-9):"));
+        panel.add(dificuldadeSlider);
+        panel.add(new JLabel("Peça do jogador:"));
+        panel.add(pecaInicialBox);
+
+        int resultado = JOptionPane.showConfirmDialog(this, panel, "Configuração Inicial", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (resultado != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        int profundidadeEscolhida = dificuldadeSlider.getValue();
+        boolean jogadorBrancas = "Brancas".equals(pecaInicialBox.getSelectedItem());
+
+        return new ConfigJogo(profundidadeEscolhida, jogadorBrancas);
     }
 }
