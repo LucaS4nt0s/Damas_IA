@@ -101,7 +101,6 @@ public final class MainInterfaceGrafica extends JFrame {
         arvore.setTurn(true);
         this.montarArvoreIA (arvore, profundidade, arvore.isTurn(), tabuleiroIA.getMatriz());
         minMaxJogoDama(arvore);
-
         mostrarArvore(arvore);
     }
 
@@ -147,8 +146,8 @@ public final class MainInterfaceGrafica extends JFrame {
     private void minMaxJogoDama(Node node) {
 
         if (node.getChild().isEmpty()) {
-            int minMax = verificarGanhadorHeuristica(node);
-            node.setMinMax(minMax);
+            int minMax = verificarGanhadorHeuristica(node); // para cada nó folha roda heurística para verificar ganhador
+            node.setMinMax(minMax); // 
         } else {
             for (int i = 0; i < node.getChild().size(); i++) {
                 Node child = node.getChild().get(i);
@@ -156,15 +155,19 @@ public final class MainInterfaceGrafica extends JFrame {
                     minMaxJogoDama (child);
                 }
             }
-            /*
-                jogada das brancas - branca é o usuário
-             */
-            if (node.isTurn()) {
-                node.setMinMax(minimo(node.getChild()));
-            } /*
-            jogada das pretas - preta é a IA
-             */ else {
-                node.setMinMax(maximo(node.getChild()));
+
+            if(this.pecasJogador){
+                if (node.isTurn()) {
+                    node.setMinMax(minimo(node.getChild()));
+                }  else {
+                    node.setMinMax(maximo(node.getChild()));
+                }
+            } else {
+                if (!node.isTurn()) {
+                    node.setMinMax(minimo(node.getChild()));
+                }  else {
+                    node.setMinMax(maximo(node.getChild()));
+                }
             }
         }
 
@@ -175,30 +178,50 @@ public final class MainInterfaceGrafica extends JFrame {
         int pecasBrancas = 0, pecasPretas = 0;
 
         for(int i = 0; i < TAMANHO; i++){
-            int inicioDoJ;
+            int inicioDoJ; // variavel para percorrer apenas casas impares
             if(i % 2 == 0){
-                inicioDoJ = 1;
+                inicioDoJ = 1; // se for par, começa em uma coluna impar
             } else{
-                inicioDoJ = 0;
+                inicioDoJ = 0; // se for impar, começa em uma coluna par
             }
 
             for(int j = inicioDoJ; j < TAMANHO; j+=2){
-                if(matriz[i][j] == '1' || matriz[i][j] == '3'){
-                    pecasBrancas++;
-                } else if(matriz[i][j] == '2' || matriz[i][j] == '4'){
-                    pecasPretas++;
+                switch (matriz[i][j]) {
+                    case '1':
+                        pecasBrancas++;
+                        break;
+                    case '3':
+                        pecasBrancas += 3;
+                        break;
+                    case '2':
+                        pecasPretas++;
+                        break;
+                    case '4':
+                        pecasPretas += 3;
+                        break;
+                    default:
+                        break;
                 }
                 
             }
         }
 
-        // heuristica para pretas IA
-        if(pecasPretas - pecasBrancas > 0){
-            return 1;
-        } else if (pecasPretas - pecasBrancas < 0){
-            return -1;
-        } else {
-            return 0;
+        if(this.pecasJogador){
+            if(pecasBrancas > pecasPretas){
+                return -1;
+            } else if(pecasPretas > pecasBrancas){
+                return 1;
+            } else{
+                return 0;
+            }
+        } else{
+            if(pecasPretas > pecasBrancas){
+                return -1;
+            } else if (pecasBrancas > pecasPretas) {
+                return 1;
+            } else{
+                return 0;
+            }
         }
     }
 
@@ -216,6 +239,11 @@ public final class MainInterfaceGrafica extends JFrame {
             max = Math.max(max, no.getMinMax());
         }
         return max;
+    }
+
+    private void fazerMovimentoComIA(){
+        boolean turnoIA = !pecasJogador;
+
     }
 
     private void tratarClique(int linha, int col) {
