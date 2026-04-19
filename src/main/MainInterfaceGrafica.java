@@ -2,6 +2,7 @@ package main;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.*;
 
 /**
@@ -9,10 +10,22 @@ import javax.swing.*;
  */
 public final class MainInterfaceGrafica extends JFrame {
 
+    private enum ModoIA {
+        PADRAO_10_NOS,
+        DIFICULDADE_1_A_9
+    }
+
     private final int TAMANHO = 6;
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
     private int profundidade; // profundidade da árvore (Nível de dificuldade)
     private boolean pecasJogador; // True - jogador joga de brancas, False - jogador joga de pretas
+    private ModoIA modoIA;
+    private boolean processandoIA;
+    private final Random random = new Random();
+    private Node arvoreAtualIA;
+    private static final int LIMITE_NOS_ARVORE = 30000;
+    private int nosArvoreGerados;
+    private int profundidadeRestanteArvore;
     
     
     /*
@@ -38,9 +51,9 @@ public final class MainInterfaceGrafica extends JFrame {
             - NA IMPOSSIBILIDADE DE EFETUAR JOGADAS, 
             O JOGADOR TRAVADO PERDE O JOGO
     */
-    private final Tabuleiro tabuleiroLogico; 
-    private final Tabuleiro tabuleiroIA = new Tabuleiro();
+    private Tabuleiro tabuleiroLogico; 
     private int linhaOrigem = -1, colOrigem = -1;
+    private ConfigJogo configAtual;
 
     public MainInterfaceGrafica() {
         
@@ -56,18 +69,17 @@ public final class MainInterfaceGrafica extends JFrame {
             return;
         }
 
-        this.profundidade = config.profundidade;
-        this.pecasJogador = config.pecasJogador;
-
         setTitle("DISCIPLINA - IA - MINI JOGO DE DAMA");
         setSize(800, 800);
         setLayout(new GridLayout(TAMANHO, TAMANHO));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         inicializarComponentes();
+        aplicarConfigJogo(config);
         sincronizarInterface(tabuleiroLogico.getMatriz()); 
 
         setVisible(true);
+        executarTurnoIASeNecessario();
     }
 
     private void inicializarComponentes() {
@@ -88,31 +100,51 @@ public final class MainInterfaceGrafica extends JFrame {
                 add(tabuleiroInterface[i][j]);
             }
         }
+    }
 
-        /*
-            CRIAÇÃO DA ÁRVORE
-        
-            - PARA O ESTADO DO TABULEIRO, VERIFICAR JOGADAS POSSÍVEIS;
-            - PARA CADA JOGADA POSSÍVEL, CRIA UM NOVO NÓ;
-            - ADICIONAMOS OS NÓS NA ÁRVORE;
-            - ENTRAMOS RECURSIVAMENTE NOS NÓS FILHOS;
-        */
-        Node arvore = new Node();
-        arvore.setTurn(true);
-        this.montarArvoreIA (arvore, profundidade, arvore.isTurn(), tabuleiroIA.getMatriz());
-        minMaxJogoDama(arvore);
-        mostrarArvore(arvore);
+    private void aplicarConfigJogo(ConfigJogo config) {
+        this.configAtual = config;
+        this.profundidade = config.profundidade;
+        this.pecasJogador = config.pecasJogador;
+        this.modoIA = config.modoIA;
+        this.processandoIA = false;
+        this.arvoreAtualIA = null;
+        this.nosArvoreGerados = 0;
+        this.profundidadeRestanteArvore = 0;
+        this.tabuleiroLogico.reiniciar();
+        this.linhaOrigem = -1;
+        this.colOrigem = -1;
+        restaurarCoresTabuleiro();
+        sincronizarInterface(tabuleiroLogico.getMatriz());
+    }
+
+    private void restaurarCoresTabuleiro() {
+        for (int i = 0; i < TAMANHO; i++) {
+            for (int j = 0; j < TAMANHO; j++) {
+                if ((i + j) % 2 == 0) {
+                    tabuleiroInterface[i][j].setBackground(new Color(235, 235, 208));
+                } else {
+                    tabuleiroInterface[i][j].setBackground(new Color(119, 149, 86));
+                }
+            }
+        }
     }
 
     private void montarArvoreIA(Node no, int profundidade, boolean vez, char[][] matriz){
-        if(profundidade <= 0){
+        if(profundidade <= 0 || nosArvoreGerados >= LIMITE_NOS_ARVORE){
             return;
         }
         Tabuleiro tabuleiroGerador = new Tabuleiro();
-        ArrayList<Jogada> jogadasPossiveis = tabuleiroGerador.retornaJogadasPossiveis(matriz, vez, false);
+        boolean obrigadoComer = tabuleiroGerador.verificarAlgumaPecaPodeComer(vez, matriz);
+        ArrayList<Jogada> jogadasPossiveis = tabuleiroGerador.retornaJogadasPossiveis(matriz, vez, obrigadoComer);
         int proxProfundidade = profundidade - 1;
         for (Jogada jogada : jogadasPossiveis) {
+            if (nosArvoreGerados >= LIMITE_NOS_ARVORE) {
+                break;
+            }
+
             Node novoNo = new Node();
+            nosArvoreGerados++;
             novoNo.setOrigin(jogada.getOrigem());
             novoNo.setDest(jogada.getDestino());
 
@@ -124,23 +156,12 @@ public final class MainInterfaceGrafica extends JFrame {
             char[][] depois = simulador.fazerMovimento(posOrigem[0], posOrigem[1], posDestino[0], posDestino[1], vez, antes);
             
             novoNo.setMatrix(simulador.copiarMatriz(depois));
-            boolean proximaVez = simulador.calcularVez(antes, depois, jogada.getOrigem(), jogada.getDestino());
+            boolean proximaVez = simulador.getTurno();
             novoNo.setTurn(proximaVez);
 
             no.addChild(novoNo);
             this.montarArvoreIA (novoNo, proxProfundidade, proximaVez, novoNo.getMatrix());                                                        
         }   
-    }
-
-    private void mostrarArvore(Node arvore){
-        System.out.println("{ Origem :"+ arvore.getOrigin() + ", Destino:" + arvore.getDest() + ", MinMax: " + arvore.getMinMax() + " }");
-        ArrayList<Node> filhos = arvore.getChild();
-
-        if(filhos != null){
-            for(Node no:filhos){
-                mostrarArvore(no);
-            }
-        }
     }
 
     private void minMaxJogoDama(Node node) {
@@ -241,12 +262,244 @@ public final class MainInterfaceGrafica extends JFrame {
         return max;
     }
 
+    private boolean matrizesIguais(char[][] a, char[][] b) {
+        if (a == null || b == null) {
+            return false;
+        }
+
+        for (int i = 0; i < TAMANHO; i++) {
+            for (int j = 0; j < TAMANHO; j++) {
+                if (a[i][j] != b[i][j]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void reconstruirArvorePadrao10Nos() {
+        char[][] estadoAtual = tabuleiroLogico.copiarMatriz(tabuleiroLogico.getMatriz());
+        Node raiz = new Node();
+        nosArvoreGerados = 1;
+        profundidadeRestanteArvore = 10;
+        raiz.setTurn(tabuleiroLogico.getTurno());
+        raiz.setMatrix(estadoAtual);
+        montarArvoreIA(raiz, 10, raiz.isTurn(), raiz.getMatrix());
+        minMaxJogoDama(raiz);
+        arvoreAtualIA = raiz;
+    }
+
+    private void garantirArvoreAlinhada() {
+        if (modoIA != ModoIA.PADRAO_10_NOS) {
+            arvoreAtualIA = null;
+            profundidadeRestanteArvore = 0;
+            return;
+        }
+
+        boolean precisaReconstruir = arvoreAtualIA == null
+                || profundidadeRestanteArvore <= 0
+                || !matrizesIguais(arvoreAtualIA.getMatrix(), tabuleiroLogico.getMatriz())
+                || arvoreAtualIA.isTurn() != tabuleiroLogico.getTurno()
+                || arvoreAtualIA.getChild().isEmpty();
+
+        if (precisaReconstruir) {
+            reconstruirArvorePadrao10Nos();
+        }
+    }
+
+    private void avancarArvoreParaEstadoAtual() {
+        if (modoIA != ModoIA.PADRAO_10_NOS || arvoreAtualIA == null) {
+            return;
+        }
+
+        if (matrizesIguais(arvoreAtualIA.getMatrix(), tabuleiroLogico.getMatriz())
+                && arvoreAtualIA.isTurn() == tabuleiroLogico.getTurno()) {
+            return;
+        }
+
+        for (Node filho : arvoreAtualIA.getChild()) {
+            if (matrizesIguais(filho.getMatrix(), tabuleiroLogico.getMatriz())
+                    && filho.isTurn() == tabuleiroLogico.getTurno()) {
+                arvoreAtualIA = filho;
+                if (profundidadeRestanteArvore > 0) {
+                    profundidadeRestanteArvore--;
+                }
+                return;
+            }
+        }
+
+        arvoreAtualIA = null;
+        profundidadeRestanteArvore = 0;
+    }
+
     private void fazerMovimentoComIA(){
-        boolean turnoIA = !pecasJogador;
+        if (processandoIA) {
+            return;
+        }
+
+        boolean turnoIA = tabuleiroLogico.getTurno() != pecasJogador;
+        if (!turnoIA) {
+            return;
+        }
+
+        processandoIA = true;
+
+        if (tabuleiroLogico.temSequenciaCapturaAtiva()) {
+            boolean obrigadoComer = tabuleiroLogico.verificarAlgumaPecaPodeComer(tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
+            ArrayList<Jogada> jogadasValidas = tabuleiroLogico.retornaJogadasPossiveis(
+                    tabuleiroLogico.getMatriz(), tabuleiroLogico.getTurno(), obrigadoComer);
+
+            if (jogadasValidas.isEmpty()) {
+                processandoIA = false;
+                return;
+            }
+
+            Jogada jogadaEscolhida = jogadasValidas.get(random.nextInt(jogadasValidas.size()));
+            int[] origem = Codificadora.decodificar(jogadaEscolhida.getOrigem());
+            int[] destino = Codificadora.decodificar(jogadaEscolhida.getDestino());
+            ResultadoMovimento resultado = tabuleiroLogico.fazerMovimentoComResultado(
+                    origem[0], origem[1], destino[0], destino[1], tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
+
+                avancarArvoreParaEstadoAtual();
+
+            sincronizarInterface(tabuleiroLogico.getMatriz());
+            processandoIA = false;
+
+            if (resultado.getEstadoJogo() != EstadoJogo.EM_ANDAMENTO) {
+                mostrarMensagemFim(resultado.getEstadoJogo());
+                return;
+            }
+
+            executarTurnoIASeNecessario();
+            return;
+        }
+
+        Node raiz;
+        if (modoIA == ModoIA.PADRAO_10_NOS) {
+            garantirArvoreAlinhada();
+            raiz = arvoreAtualIA;
+        } else {
+            int profundidadeBusca = profundidade;
+            char[][] estadoAtual = tabuleiroLogico.copiarMatriz(tabuleiroLogico.getMatriz());
+
+            raiz = new Node();
+            raiz.setTurn(tabuleiroLogico.getTurno());
+            raiz.setMatrix(estadoAtual);
+            montarArvoreIA(raiz, profundidadeBusca, raiz.isTurn(), raiz.getMatrix());
+            minMaxJogoDama(raiz);
+        }
+
+        if (raiz == null || raiz.getChild().isEmpty()) {
+            processandoIA = false;
+            mostrarMensagemFim(tabuleiroLogico.getEstadoJogoAtual());
+            return;
+        }
+
+        Node escolhido;
+        if (modoIA == ModoIA.DIFICULDADE_1_A_9) {
+            int indice = random.nextInt(raiz.getChild().size());
+            escolhido = raiz.getChild().get(indice);
+        } else {
+            ArrayList<Node> melhores = new ArrayList<>();
+            for (Node child : raiz.getChild()) {
+                if (child.getMinMax() == raiz.getMinMax()) {
+                    melhores.add(child);
+                }
+            }
+
+            if (melhores.isEmpty()) {
+                escolhido = raiz.getChild().get(0);
+            } else {
+                escolhido = melhores.get(random.nextInt(melhores.size()));
+            }
+        }
+
+        int[] origem = Codificadora.decodificar(escolhido.getOrigin());
+        int[] destino = Codificadora.decodificar(escolhido.getDest());
+        ResultadoMovimento resultado = tabuleiroLogico.fazerMovimentoComResultado(
+                origem[0], origem[1], destino[0], destino[1], tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
+
+        if (modoIA == ModoIA.PADRAO_10_NOS) {
+            arvoreAtualIA = escolhido;
+            avancarArvoreParaEstadoAtual();
+        }
+
+        sincronizarInterface(tabuleiroLogico.getMatriz());
+        processandoIA = false;
+
+        if (resultado.getEstadoJogo() != EstadoJogo.EM_ANDAMENTO) {
+            mostrarMensagemFim(resultado.getEstadoJogo());
+            return;
+        }
+
+        executarTurnoIASeNecessario();
 
     }
 
+    private void executarTurnoIASeNecessario() {
+        boolean turnoIA = tabuleiroLogico.getTurno() != pecasJogador;
+        if (turnoIA) {
+            SwingUtilities.invokeLater(this::fazerMovimentoComIA);
+        }
+    }
+
+    private void mostrarMensagemFim(EstadoJogo estadoJogo) {
+        switch (estadoJogo) {
+            case EMPATE:
+                JOptionPane.showMessageDialog(this, "Fim de jogo: empate");
+                break;
+            case VITORIA_BRANCAS:
+                JOptionPane.showMessageDialog(this, "Fim de jogo: vitória das brancas");
+                break;
+            case VITORIA_PRETAS:
+                JOptionPane.showMessageDialog(this, "Fim de jogo: vitória das pretas");
+                break;
+            default:
+                break;
+        }
+
+        perguntarReinicio();
+    }
+
+    private void perguntarReinicio() {
+        Object[] opcoes = {"Mesmos parâmetros", "Novos parâmetros", "Cancelar"};
+        int escolha = JOptionPane.showOptionDialog(
+                this,
+                "Deseja reiniciar a partida?",
+                "Reiniciar jogo",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcoes,
+                opcoes[0]);
+
+        if (escolha == 0) {
+            aplicarConfigJogo(this.configAtual);
+            executarTurnoIASeNecessario();
+        } else if (escolha == 1) {
+            ConfigJogo novoConfig = mostrarConfigInicial();
+            if (novoConfig != null) {
+                aplicarConfigJogo(novoConfig);
+                executarTurnoIASeNecessario();
+            }
+        }
+    }
+
     private void tratarClique(int linha, int col) {
+        if (processandoIA) {
+            return;
+        }
+
+        if (tabuleiroLogico.getEstadoJogoAtual() != EstadoJogo.EM_ANDAMENTO) {
+            mostrarMensagemFim(tabuleiroLogico.getEstadoJogoAtual());
+            return;
+        }
+
+        boolean turnoIA = tabuleiroLogico.getTurno() != pecasJogador;
+        if (turnoIA) {
+            return;
+        }
         
         // Caso 1: Nenhuma peça selecionada ainda
         if (linhaOrigem == -1) {
@@ -274,10 +527,24 @@ public final class MainInterfaceGrafica extends JFrame {
             }
             
 
-            char[][] tabuleiroAtualizado = tabuleiroLogico.fazerMovimento(linhaOrigem, colOrigem, linha, col, tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
+            ResultadoMovimento resultado = tabuleiroLogico.fazerMovimentoComResultado(
+                    linhaOrigem, colOrigem, linha, col, tabuleiroLogico.getTurno(), tabuleiroLogico.getMatriz());
 
             cancelarSelecao();
-            sincronizarInterface(tabuleiroAtualizado);
+            sincronizarInterface(tabuleiroLogico.getMatriz());
+
+            if (!resultado.isValido()) {
+                return;
+            }
+
+            avancarArvoreParaEstadoAtual();
+
+            if (resultado.getEstadoJogo() != EstadoJogo.EM_ANDAMENTO) {
+                mostrarMensagemFim(resultado.getEstadoJogo());
+                return;
+            }
+
+            executarTurnoIASeNecessario();
         }
     }
 
@@ -347,10 +614,12 @@ public final class MainInterfaceGrafica extends JFrame {
     private static class ConfigJogo{
         final int profundidade;
         final boolean pecasJogador; // true - jogador começa de brancas, false - jogador começa de pretas
+        final ModoIA modoIA;
 
-        ConfigJogo(int profundidade, boolean pecasJogador){
+        ConfigJogo(int profundidade, boolean pecasJogador, ModoIA modoIA){
             this.profundidade = profundidade;
             this.pecasJogador = pecasJogador;
+            this.modoIA = modoIA;
         }
     }
 
@@ -367,10 +636,16 @@ public final class MainInterfaceGrafica extends JFrame {
         "Brancas", "Pretas"
         });
 
+        JComboBox<String> modoIABOX = new JComboBox<>(new String[] {
+        "IA padrão (10 nós)", "IA dificuldade (1-9)"
+        });
+
         panel.add(new JLabel("Dificuldade (1-9):"));
         panel.add(dificuldadeSlider);
         panel.add(new JLabel("Peça do jogador:"));
         panel.add(pecaInicialBox);
+        panel.add(new JLabel("Modo da IA:"));
+        panel.add(modoIABOX);
 
         int resultado = JOptionPane.showConfirmDialog(this, panel, "Configuração Inicial", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
@@ -380,7 +655,10 @@ public final class MainInterfaceGrafica extends JFrame {
 
         int profundidadeEscolhida = dificuldadeSlider.getValue();
         boolean jogadorBrancas = "Brancas".equals(pecaInicialBox.getSelectedItem());
+        ModoIA modoIAEscolhido = "IA padrão (10 nós)".equals(modoIABOX.getSelectedItem())
+            ? ModoIA.PADRAO_10_NOS
+            : ModoIA.DIFICULDADE_1_A_9;
 
-        return new ConfigJogo(profundidadeEscolhida, jogadorBrancas);
+        return new ConfigJogo(profundidadeEscolhida, jogadorBrancas, modoIAEscolhido);
     }
 }
