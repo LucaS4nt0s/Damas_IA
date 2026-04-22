@@ -12,7 +12,7 @@ public class ResultadoMovimento {
 	private final boolean turnoBrancas;
 	// estado geral da partida depois da jogada
 	private final EstadoJogo estadoJogo;
-	// mensagem amigável para interface/debug
+	// mensagem para interface/debug
 	private final String mensagem;
 
 	// construtor com todos os dados do resultado

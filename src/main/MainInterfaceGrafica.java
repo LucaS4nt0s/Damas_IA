@@ -23,9 +23,9 @@ public final class MainInterfaceGrafica extends JFrame {
     // matriz de botões da interface gráfica
     private final CasaBotao[][] tabuleiroInterface = new CasaBotao[TAMANHO][TAMANHO];
     // profundidade usada no modo de dificuldade
-    private int profundidade; // profundidade da árvore (nível de dificuldade)
+    private int profundidade; 
     // true = jogador controla brancas, false = jogador controla pretas
-    private boolean pecasJogador; // true = jogador joga de brancas, false = jogador joga de pretas
+    private boolean pecasJogador; 
     // modo da ia escolhido no início
     private ModoIA modoIA;
     // trava para evitar clique enquanto a ia está pensando
@@ -232,13 +232,13 @@ public final class MainInterfaceGrafica extends JFrame {
                         pecasBrancas++;
                         break;
                     case '3':
-                        pecasBrancas += 3;
+                        pecasBrancas += 5;
                         break;
                     case '2':
                         pecasPretas++;
                         break;
                     case '4':
-                        pecasPretas += 3;
+                        pecasPretas += 5;
                         break;
                     default:
                         break;
@@ -284,7 +284,7 @@ public final class MainInterfaceGrafica extends JFrame {
         return max;
     }
 
-    // compara duas matrizes de tabuleiro posição por posição
+    // compara duas matrizes de tabuleiro posição por posição (Garante que a IA e o Jogador estão no mesmo tabuleiro)
     private boolean matrizesIguais(char[][] a, char[][] b) {
         if (a == null || b == null) {
             return false;
